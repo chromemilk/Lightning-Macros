@@ -264,8 +264,7 @@ void gui::Render() noexcept
 	ImGui::SetNextWindowSize({ WIDTH, HEIGHT });
 	ImGui::Begin(
 		"Lightning Launcher",
-		&isRunning//,
-		//ImGuiWindowFlags_MenuBar
+		&isRunning
 	);
 	
 
@@ -359,17 +358,53 @@ void gui::Render() noexcept
 
 		ImGui::Text("Version:");
 		ImGui::SameLine();
-		ImGui::TextColored(ImVec4(0, 1, 0, 1), "v0.0.1");
+		ImGui::TextColored(ImVec4(0, 1, 0, 1), "v1.0.1");
 
-		ImGui::SetCursorPos(ImVec2((gui::WIDTH / 2) - 70, gui::HEIGHT / 4));
+
+		static bool isChecking = false;
+
+		if (isChecking == true) {
+			std::ifstream file(".\\ExternalCrossHairOverlay.exe");
+			if (file.good()) {
+				ImGui::TextColored(ImVec4(0, 1, 0, 1), "Crosshair: Found");
+			}
+			else {
+				ImGui::TextColored(ImVec4(1, 0, 0, 1), "Crosshair: Not Found");
+			}
+			file.close();
+			std::ifstream file2(".\\Lightning Macros.exe");
+			if (file2.good()) {
+				ImGui::TextColored(ImVec4(0, 1, 0, 1), "Macro: Found");
+			}
+			else {
+				ImGui::TextColored(ImVec4(1, 0, 0, 1), "Macro: Not Found");
+			}
+			file2.close();
+		}
+
+
+
+		ImGui::SetCursorPos(ImVec2((gui::WIDTH / 2) - 70, gui::HEIGHT - 250));
 		if (ImGui::Button("Standalone Crosshair")) {
 			const char* programPath = ".\\ExternalCrossHairOverlay.exe";
 			ShellExecuteA(nullptr, "open", programPath, nullptr, nullptr, SW_SHOWNORMAL) <= (HINSTANCE)32;
 		}
-		ImGui::SetCursorPos(ImVec2((gui::WIDTH / 2) - 34, gui::HEIGHT / 2));
+		ImGui::SetCursorPos(ImVec2((gui::WIDTH / 2) - 34, gui::HEIGHT - 190));
 		if (ImGui::Button("Full Macro")) {
 			const char* programPath = ".\\Lightning Macros.exe";
 			ShellExecuteA(nullptr, "open", programPath, nullptr, nullptr, SW_SHOWNORMAL) <= (HINSTANCE)32;
+		}
+
+		ImGui::SetCursorPos(ImVec2((gui::WIDTH / 2) - 36, (gui::HEIGHT - 128)));
+		if (ImGui::Button("Check Files")) {
+			isChecking = true;
+		}
+
+		ImGui::SetCursorPos(ImVec2((gui::WIDTH / 2) - 30, (gui::HEIGHT - 65)));
+		if (ImGui::Button("Uninstall")) {
+			remove(".\\ExternalCrossHairOverlay.exe");
+			remove(".\\Lightning Macros.exe");
+			remove(".\\Lightning Launcher.exe");
 		}
 
 	ImGui::End();
