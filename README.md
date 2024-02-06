@@ -20,7 +20,7 @@ This code, as of 2/6/2024, has only been written by me, chromemilk
 
 ---
 
-Start the macro after you start the game so the anti-recoil is able to sync with the same
+Start the macro after you start the game so the anti-recoil is able to sync with the game
 
 ---
 
