@@ -104,3 +104,14 @@ Pros & Cons
 
 - Relies on raw math instead of data-assisted math (unable to process game data for use in anti-recoil and relies on user input; eliminates a RCS)
 - Pixelbot relies on RGB values and won't work in dark games
+
+<h3 align="center">
+How to compile
+<\h3>
+
+- Download the zip file or clone the repository 
+- Make sure your C++ standard is on C++ 20
+- Have the icon on your desktop or change the location in the resource.h file
+- Set your project to "release" x86
+- Click the green arrow or build the solution
+- **This applies to BOTH the launcher and the macro solutions**
