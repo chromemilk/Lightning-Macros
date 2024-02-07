@@ -1067,7 +1067,7 @@ void gui::Render() noexcept
 			ImGui::Checkbox("Enable", &Triggerbot::isActive);
 			if (Triggerbot::isActive == true) {
 				ImGui::Checkbox("Smart Pixel Detection", &Triggerbot::useAi);
-				ImGui::SliderInt("Accuracy", &Triggerbot::accuracy, 1, 10);
+				ImGui::SliderInt("Accuracy", &Triggerbot::accuracy, 1, 25);
 				if (ImGui::Combo("Hold Key", &Triggerbot::HotKey, "X\0Q\0E\0T\0")) {
 					Triggerbot::SetHotKey(Triggerbot::HotKey);
 				}
@@ -1082,13 +1082,13 @@ void gui::Render() noexcept
 				ImGui::Text("Last RGB:");
 				ImGui::SameLine();
 				ImGui::TextColored(ImVec4(0, 1, 0, 1), "%d, %d, %d", Triggerbot::lastRGBL[0], Triggerbot::lastRGBL[1], Triggerbot::lastRGBL[2]);
-				if (Triggerbot::currentActive == true) {
-				ImGui::Text("Debug:");
+				if (Triggerbot::isActive == true) {
+				ImGui::Text("Triggerbot:");
 				ImGui::SameLine();
 				ImGui::TextColored(ImVec4(0, 1, 0, 1), "Active");
 				}
 				else {
-					ImGui::Text("Debug:");
+					ImGui::Text("Triggerbot:");
 					ImGui::SameLine();
 					ImGui::TextColored(ImVec4(1, 0, 0, 1), "Not Active");
 				}
@@ -1140,7 +1140,7 @@ void gui::Render() noexcept
 			ImGui::Spacing();
 			ImGui::Text("Battleye:");
 			ImGui::Spacing();
-			ImGui::TextColored(ImVec4(0, 1, 0, 1), "[Undetected]");
+			ImGui::TextColored(ImVec4(0, 1, 0, 1), "[Undetected] (Macros & Anti-afk will not work)");
 			ImGui::Spacing();
 			ImGui::Text("EAC:");
 			ImGui::Spacing();

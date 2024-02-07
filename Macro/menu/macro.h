@@ -361,7 +361,6 @@ namespace Triggerbot {
 	inline bool useAi = false;
 	inline std::vector<int> HotKeyList { 'X', 'Q', 'E', 'T' };
 	inline int HotKey = 0;
-	inline bool currentActive = false;
 	inline std::vector<double> currentRGBL = { 0, 0, 0 };
 	inline std::vector<double> lastRGBL = { 0, 0, 0 };
 	inline int accuracy = 0;
