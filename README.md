@@ -107,7 +107,7 @@ Pros & Cons
 
 <h3 align="center">
 How to compile
-<\h3>
+</h3>
 
 - Download the zip file or clone the repository 
 - Make sure your C++ standard is on C++ 20
