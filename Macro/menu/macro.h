@@ -16,6 +16,7 @@
 #define RIFLE 3
 
 namespace No_recoil {
+	inline bool adsOnly = false;
 	inline int strengthX = 0;
 	// neg value means left, pos means right
 	inline int strengthY = 0;
@@ -30,7 +31,7 @@ namespace No_recoil {
 }
 // The next few namespaces are for the combo boxes in the gui and the hotkeys
 namespace Preset {
-	inline int CurrentPreset = DEFAULT;
+	inline int CurrentPreset = 0;
 	inline std::vector<int> PresetList{ DEFAULT, PISTOL, DMR, RIFLE};
 	inline void SetPreset(int Index)
 	{
@@ -146,15 +147,12 @@ namespace Macros {
 			}
 		}
 		if (Macros::rapid_fire && Macros::isActive) {
-			while (true) {
 				if (GetAsyncKeyState(VK_LBUTTON)) {
 					mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
 					Sleep(1000);
 					mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
 					Sleep(100);
 				}
-			}
-			Sleep(100);
 		}
 	}
 }
@@ -179,7 +177,10 @@ namespace PullMouse {
 		if (GetAsyncKeyState(VK_LBUTTON)) {
 			POINT currentPos;
 			GetCursorPos(&currentPos);
-			// Seeing if we have a smoothing factor; if theres an error, it wont move
+			// handling right click
+			if (No_recoil::adsOnly == true && GetAsyncKeyState(VK_RBUTTON) == false) {
+				return;
+			}
 			if (SMOOTHING_FACTOR >= 0) {
 				// If we have a delay, wait for up to one second
 				if (No_recoil::pull_delay > 0) {
@@ -332,11 +333,11 @@ namespace MovePlayer {
 		// Moving the player back and forth to prevent the player from being kicked for being afk
 		if (Globals::antiAfk == true) {
 			keybd_event('W', 0, 0, 0); // Key down
-			Sleep(100);                // Short delay
+			Sleep(10);                // Short delay
 			keybd_event('W', 0, KEYEVENTF_KEYUP, 0); // Key up
-			Sleep(100);
+			Sleep(10);
 			keybd_event('S', 0, 0, 0); // Key down
-			Sleep(100);                // Short delay
+			Sleep(10);                // Short delay
 			keybd_event('S', 0, KEYEVENTF_KEYUP, 0); // Key up
 		}
 	}
@@ -518,6 +519,7 @@ namespace MenuConfig {
 					else if (key == "No_recoil::pull_delay") No_recoil::pull_delay = std::stoi(value);
 					else if (key == "No_recoil::multiplier") No_recoil::multiplier = std::stoi(value);
 					else if (key == "No_recoil::humanize") No_recoil::humanize = value == "1";
+					else if (key == "No_recoil::adsOnly") No_recoil::adsOnly = value == "1";
 					else if (key == "Triggerbot::isActive") Triggerbot::isActive = value == "1";
 					else if (key == "Triggerbot::useAi") Triggerbot::useAi = value == "1";
 					else if (key == "Triggerbot::HotKey") Triggerbot::HotKey = std::stoi(value);
@@ -527,6 +529,7 @@ namespace MenuConfig {
 					else if (key == "Globals::antiAfk") Globals::antiAfk = value == "1";
 					else if (key == "Globals::sensX") Globals::sensX = std::stoi(value);
 					else if (key == "Globals::sensY") Globals::sensY = std::stoi(value);
+					else if (key == "Globals::styleChanged") Globals::styleChanged = value == "1";
 					else if (key == "Overlay::isActive") Overlay::isActive = value == "1";
 					else if (key == "Overlay::visualizeSound") Overlay::visualizeSound = value == "1";
 					else if (key == "Macros::bhop") Macros::bhop = value == "1";
@@ -576,6 +579,7 @@ namespace MenuConfig {
 		configFile << "No_recoil::pull_delay=" << No_recoil::pull_delay << '\n';
 		configFile << "No_recoil::multiplier=" << No_recoil::multiplier << '\n';
 		configFile << "No_recoil::humanize=" << No_recoil::humanize << '\n';
+		configFile << "No_recoil::adsOnly=" << No_recoil::adsOnly << '\n';
 		// *** PixelBot ***
 		configFile << "Triggerbot::isActive=" << Triggerbot::isActive << '\n';
 		configFile << "Triggerbot::useAi=" << Triggerbot::useAi << '\n';
@@ -587,6 +591,7 @@ namespace MenuConfig {
 		configFile << "Globals::antiAfk=" << Globals::antiAfk << '\n';
 		configFile << "Globals::sensX=" << Globals::sensX << '\n';
 		configFile << "Globals::sensY=" << Globals::sensY << '\n';
+		configFile << "Globals::styleChanged=" << Globals::styleChanged << '\n';
 		// *** Overlay ***
 		configFile << "Overlay::isActive=" << Overlay::isActive << '\n';
 		configFile << "Overlay::visualizeSound=" << Overlay::visualizeSound << '\n';

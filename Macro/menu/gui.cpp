@@ -757,12 +757,13 @@ void gui::Render() noexcept
 		ImGui::Spacing();
 		ImGui::Spacing();
 	}
-
-	if (ImGui::Button("Misc", ImVec2(100, 40))) {
-		Globals::ActiveTab = 6;
+	if (BuildType::advanced == true) {
+		if (ImGui::Button("Misc", ImVec2(100, 40))) {
+			Globals::ActiveTab = 6;
+		}
+		ImGui::Spacing();
+		ImGui::Spacing();
 	}
-	ImGui::Spacing();
-	ImGui::Spacing();
 
 	if (ImGui::Button("Config", ImVec2(100, 40))) {
 		Globals::ActiveTab = 10;
@@ -836,7 +837,11 @@ void gui::Render() noexcept
 				// End the tooltip block
 				ImGui::EndTooltip();
 			}
+			ImGui::SetCursorPos(ImVec2(300, 475));
+			ImGui::Checkbox("ADS Only", &No_recoil::adsOnly);
+
 			ImGui::Spacing();
+			ImGui::SetCursorPos(ImVec2(125, 580));	
 			if (ImGui::Button("Reset")) {
 				No_recoil::active = false;
 				No_recoil::strengthX = 0;
@@ -872,14 +877,14 @@ void gui::Render() noexcept
 			ImGui::Spacing();
 			ImGui::Checkbox("Bhop", &Macros::bhop);
 			if (Macros::bhop == true) {
-				if (ImGui::Combo("Bhop Key", &Bhop::HotKey, "LALT\0LBUTTON\0RBUTTON\0XBUTTON1\0XBUTTON2\0CAPITAL\0SHIFT\0CONTROL")) {
+				if (ImGui::Combo("Bhop Key", &Bhop::HotKey, "Menu\0Left Click\0Right Click\0XBUTTON 1\0XBUTTON 2\0Capital\0Shift\0Control")) {
 					Bhop::SetHotKey(Bhop::HotKey);
 				}
 			}
 			ImGui::Spacing();
 			ImGui::Checkbox("Turbo Crouch", &Macros::turbo_crouch);
 			if (Macros::turbo_crouch == true) {
-				if (ImGui::Combo("Crouch Key", &Crouch::HotKey, "LALT\0LBUTTON\0RBUTTON\0XBUTTON1\0XBUTTON2\0CAPITAL\0SHIFT\0CONTROL")) {
+				if (ImGui::Combo("Crouch Key", &Crouch::HotKey, "Menu\0Left Click\0Right Click\0XBUTTON 1\0XBUTTON 2\0Capital\0Shift\0Control")) {
 					Crouch::SetHotKey(Crouch::HotKey);
 				}
 			}
