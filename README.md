@@ -7,7 +7,7 @@ The best universal cheat alternative (UNDETECTED)
 </h4>
 
 <p align="center">
-This is a soon-to-be paid universal macro made using Dear ImGui and C++
+Free open-source universal macro made using Dear ImGui and C++
 </p>
 
 <p align="center">
