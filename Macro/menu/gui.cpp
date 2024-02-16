@@ -1054,6 +1054,22 @@ void gui::Render() noexcept
 				ImGui::EndTooltip();
 			}
 			ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
+			ImGui::Checkbox("Anti-Recoil Limit", &Globals::hasMaxTime);
+			if (Globals::hasMaxTime == true) {
+				ImGui::SliderInt("Max Time (seconds)", &Globals::maxTime, 0, 100);
+				if (ImGui::IsItemHovered()) {
+					// Begin the tooltip block
+					ImGui::BeginTooltip();
+
+					// Add text to the tooltip
+					ImGui::Text("The mouse pulldown for the anti-recoil will only last for this long");
+
+					// End the tooltip block
+					ImGui::EndTooltip();
+				}
+			}
+			ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
+
 			if (ImGui::Button("Reset")) {
 				Misc::fpsCounter = false;
 				Controller::hasController = false;

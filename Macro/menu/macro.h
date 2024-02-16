@@ -28,6 +28,7 @@ namespace No_recoil {
 	inline float multiplier = 1.0f;
 	// Makes the mouse movement more human like by adding small increments to the mouse movement to mess with the aim
 	inline bool humanize = false;
+	inline bool wasPressed = false;
 }
 // The next few namespaces are for the combo boxes in the gui and the hotkeys
 namespace Preset {
@@ -74,6 +75,24 @@ namespace AimAssistConfig {
 	inline float assistAngle = 0.0f;
 	// The smoothness of the aim assist
 	inline float assistSmooth = 1.0f;
+}
+
+namespace Globals {
+	// Keeps track of the active tab
+	inline int ActiveTab = 1;
+	// Sensitivity for the x and y axis in game to calculate the recoil presets
+	inline int sensX = 12;
+	inline int sensY = 12;
+	// Basically just the misc settings
+	inline bool antiAfk = false;
+	inline bool efficentMode = false;
+	inline bool scriptCheck = false;
+	//inline int currentStyle = 1;
+	inline bool styleChanged = false;
+	inline bool saveOnClose = false;
+	inline bool hasMaxTime = false;
+	inline int maxTime = 0;
+	inline int currentTime = 0;
 }
 
 
@@ -162,7 +181,10 @@ namespace Macros {
 
 
 namespace PullMouse {
-	inline void Run(float SMOOTHING_FACTOR, int DRAG_RATE_X, int DRAG_RATE_Y) {
+/*	inline void Run(float SMOOTHING_FACTOR, int DRAG_RATE_X, int DRAG_RATE_Y) {
+		if (Globals::currentTime * 1000 > Globals::maxTime * 1000 && Globals::hasMaxTime == true) {
+			return;
+		}
 		// Set local scope smoothing
 		float smoothingX = SMOOTHING_FACTOR;
 		float smoothingY = SMOOTHING_FACTOR;
@@ -175,6 +197,7 @@ namespace PullMouse {
 		}
 		// If the LMB is pressed, we get the current position of the cursor and then add to it depending on the smoothing, and drag rate
 		if (GetAsyncKeyState(VK_LBUTTON)) {
+			Globals::currentTime++;
 			POINT currentPos;
 			GetCursorPos(&currentPos);
 			// handling right click
@@ -208,6 +231,55 @@ namespace PullMouse {
 				}
 				Sleep(20);
 			}
+		}
+	}*/
+	inline void Run(float SMOOTHING_FACTOR, int DRAG_RATE_X, int DRAG_RATE_Y) {
+		bool isPressed = (GetAsyncKeyState(VK_LBUTTON) & 0x8000) != 0;
+
+		// Reset currentTime when the left mouse button is released
+		if (No_recoil::wasPressed && !isPressed) {
+			Globals::currentTime = 0; // Reset the timer
+		}
+
+		No_recoil::wasPressed = isPressed; // Update the button state for the next tick
+
+		// Exit if the max time has been reached
+		if (Globals::hasMaxTime && Globals::currentTime * 1000 >= Globals::maxTime * 30000) {
+			return; // Do not perform any mouse movements
+		}
+
+		if (isPressed) {
+			// Increment currentTime here if necessary, depending on how you track time.
+			// For example, you might increment by the tick duration or a fixed value representing the time since the last call.
+			Globals::currentTime += 1.f; // Assume this function is called frequently
+
+			POINT currentPos;
+			GetCursorPos(&currentPos);
+
+			if (No_recoil::adsOnly && !(GetAsyncKeyState(VK_RBUTTON) & 0x8000)) {
+				return;
+			}
+
+			if (No_recoil::pull_delay > 0) {
+				Sleep(No_recoil::pull_delay);
+			}
+
+			int deltaX = static_cast<int>(std::ceil((DRAG_RATE_X * SMOOTHING_FACTOR) * No_recoil::multiplier));
+			int deltaY = static_cast<int>(std::ceil((DRAG_RATE_Y * SMOOTHING_FACTOR) * No_recoil::multiplier));
+
+			if (No_recoil::humanize) {
+				deltaX += 1;
+				deltaY -= 2;
+			}
+
+			if (No_recoil::within_program) {
+				mouse_event(MOUSEEVENTF_MOVE, deltaX, deltaY, 0, 0);
+			}
+			else {
+				SetCursorPos(currentPos.x + deltaX, currentPos.y + deltaY);
+			}
+
+			Sleep(20); // Introduce a small delay to reduce CPU usage
 		}
 	}
 }
@@ -312,7 +384,7 @@ namespace BuildType {
 	inline char buildType[] = "Developer";
 }
 
-namespace Globals {
+/*namespace Globals {
 	// Keeps track of the active tab
 	inline int ActiveTab = 1;
 	// Sensitivity for the x and y axis in game to calculate the recoil presets
@@ -325,7 +397,9 @@ namespace Globals {
 	//inline int currentStyle = 1;
 	inline bool styleChanged = false;
 	inline bool saveOnClose = false;
-}
+	inline bool hasMaxTime = false;
+	inline int maxTime = 0;
+}*/
 
 
 
