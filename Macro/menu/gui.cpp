@@ -206,6 +206,9 @@ void gui::CreateImGui() noexcept
 
 void gui::DestroyImGui() noexcept
 {
+	if (Globals::saveOnClose == true) {
+		MenuConfig::saveConfig((std::string)"Last Closed Config");
+	}
 	ImGui_ImplDX9_Shutdown();
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
@@ -464,7 +467,7 @@ void gui::Render() noexcept
 		style.WindowMinSize = ImVec2(20.0f, 20.0f);
 		style.WindowTitleAlign = ImVec2(0.5f, 0.5f);
 		style.WindowMenuButtonPosition = ImGuiDir_None;
-		style.ChildRounding = 6.0f;
+		style.ChildRounding = 0.0f;
 		style.ChildBorderSize = 1.0f;
 		style.PopupRounding = 6.0f;
 		style.PopupBorderSize = 1.0f;
@@ -650,7 +653,6 @@ void gui::Render() noexcept
 	}
 
 
-
 	ImGui::Text("Version:");
 	ImGui::SameLine();
 	ImGui::TextColored(ImVec4(0, 1, 0, 1), "v1.4.4 (Beta)");
@@ -662,7 +664,6 @@ void gui::Render() noexcept
 	ImGui::Text("Build:");
 	ImGui::SameLine();
 	ImGui::TextColored(ImVec4(1, 0, 0, 1), BuildType::buildType);
-
 
 	ImGui::Columns(2);
 	ImGui::SetColumnOffset(1, 120);
@@ -823,7 +824,7 @@ void gui::Render() noexcept
 			if (ImGui::Combo("Preset", &Preset::CurrentPreset, "DEFAULT\0PISTOL\0DMR\0RIFLE")) {
 				Preset::SetPreset(Preset::CurrentPreset);
 			}
-			ImGui::Separator();
+			ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
 			ImGui::Checkbox("Active", &No_recoil::active);
 			ImGui::Checkbox("Anti-Cheat bypass", &No_recoil::within_program);
 			ImGui::Checkbox("Humanize", &No_recoil::humanize);
@@ -891,7 +892,7 @@ void gui::Render() noexcept
 			ImGui::Spacing();
 			ImGui::Checkbox("Tap Fire (happens on fire)", &Macros::rapid_fire);
 			ImGui::Spacing();
-			ImGui::Separator();
+			ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
 			ImGui::Checkbox("Master Switch", &Macros::isActive);
 			ImGui::Spacing();
 			if (ImGui::Button("Reset")) {
@@ -987,7 +988,7 @@ void gui::Render() noexcept
 			ImGui::Checkbox("FPS Counter", &Misc::fpsCounter);
 			ImGui::Checkbox("Controller Support", &Controller::hasController);
 			if (Controller::hasController) {
-				ImGui::Separator();
+				ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
 				ImGui::Checkbox("Xbox", &Controller::xbox);
 				if (ImGui::IsItemHovered()) {
 					// Begin the tooltip block
@@ -1001,7 +1002,35 @@ void gui::Render() noexcept
 				}
 			//	ImGui::Checkbox("PS4", &Controller::ps4);
 			//	ImGui::Checkbox("PS5", &Controller::ps5);
+			}			
+			ImGui::Checkbox("Anti-Afk kick", &Globals::antiAfk);
+			ImGui::SetCursorPos(ImVec2(300, 77));
+			ImGui::Checkbox("Low Usage", &Globals::efficentMode);
+			if (ImGui::IsItemHovered()) {
+				// Begin the tooltip block
+				ImGui::BeginTooltip();
+
+				// Add text to the tooltip
+				ImGui::Text("Turns off other features except anti-recoil");
+
+				// End the tooltip block
+				ImGui::EndTooltip();
 			}
+			ImGui::SetCursorPos(ImVec2(300, 108));
+			ImGui::Checkbox("Anti-script check", &Globals::scriptCheck);
+			if (ImGui::IsItemHovered()) {
+				// Begin the tooltip block
+				ImGui::BeginTooltip();
+
+				// Add text to the tooltip
+				ImGui::Text("Hides program from task manager and taskbar");
+
+				// End the tooltip block
+				ImGui::EndTooltip();
+			}
+			ImGui::SetCursorPos(ImVec2(300, 140));
+			ImGui::Checkbox("Purple Style", &Globals::styleChanged);
+			ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
 			ImGui::SliderInt("Vertical Sens", &Globals::sensY, 0, 100);
 			if (ImGui::IsItemHovered()) {
 				// Begin the tooltip block
@@ -1024,43 +1053,32 @@ void gui::Render() noexcept
 				// End the tooltip block
 				ImGui::EndTooltip();
 			}
-			ImGui::Checkbox("Anti-Afk kick", &Globals::antiAfk);
-			ImGui::Checkbox("Low Usage", &Globals::efficentMode);
-			if (ImGui::IsItemHovered()) {
-				// Begin the tooltip block
-				ImGui::BeginTooltip();
-
-				// Add text to the tooltip
-				ImGui::Text("Turns off other features except anti-recoil");
-
-				// End the tooltip block
-				ImGui::EndTooltip();
+			ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
+			if (ImGui::Button("Reset")) {
+				Misc::fpsCounter = false;
+				Controller::hasController = false;
+				Globals::antiAfk = false;
+				Globals::efficentMode = false;
+				Globals::scriptCheck = false;
+				Globals::styleChanged = false;
+				Globals::sensY = 12;
+				Globals::sensX = 12;
 			}
-			ImGui::Checkbox("Anti-script check", &Globals::scriptCheck);
-			if (ImGui::IsItemHovered()) {
-				// Begin the tooltip block
-				ImGui::BeginTooltip();
-
-				// Add text to the tooltip
-				ImGui::Text("Hides program from task manager and taskbar");
-
-				// End the tooltip block
-				ImGui::EndTooltip();
-			}
-			ImGui::Checkbox("Purple Style", &Globals::styleChanged);
+			ImGui::SameLine();
+			ImGui::Checkbox("Save on close", &Globals::saveOnClose);
 		}
 		if (Globals::ActiveTab == 7) {
 			ImGui::SetCursorPos(ImVec2(gui::WIDTH / 2.8, 60));
 			ImGui::Text("           === Ai Aimbot ===");
 			ImGui::Checkbox("Enable", &Aimbot::isActive);
 			if (Aimbot::isActive == true) {
-				ImGui::Separator();
+				ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
 				ImGui::Spacing();
 				ImGui::Spacing();
 				ImGui::Checkbox("Human Anatomy", &Aimbot::usesHumanAnatomy);
 				ImGui::Spacing();
 				ImGui::Spacing();
-				ImGui::Separator();
+				ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
 				ImGui::Checkbox("Ai Detection", &Aimbot::useAi);
 				ImGui::Checkbox("Auto Lock", &Aimbot::autoLock);
 			}
@@ -1121,7 +1139,7 @@ void gui::Render() noexcept
 			ImGui::Text("-");
 			ImGui::SameLine();
 			ImGui::Text("Implemented structures for new features (dev)");
-			ImGui::Separator();
+			ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
 			ImGui::Text("---Macro Help v1.4.4 (Beta) ---");
 			ImGui::Spacing();
 			ImGui::Text("Macro stopped working:");
@@ -1137,7 +1155,7 @@ void gui::Render() noexcept
 			ImGui::SameLine();
 			ImGui::TextColored(ImVec4(0, 1, 0, 1), "Restart macro and/or game");
 			ImGui::Spacing();
-			ImGui::Separator();
+			ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
 			ImGui::Text("--- Anti-Cheat status v1.4.4 (Beta) ---");
 			ImGui::Text("VAC:");
 			ImGui::Spacing();

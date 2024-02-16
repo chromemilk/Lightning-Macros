@@ -324,6 +324,7 @@ namespace Globals {
 	inline bool scriptCheck = false;
 	//inline int currentStyle = 1;
 	inline bool styleChanged = false;
+	inline bool saveOnClose = false;
 }
 
 
@@ -530,6 +531,7 @@ namespace MenuConfig {
 					else if (key == "Globals::sensX") Globals::sensX = std::stoi(value);
 					else if (key == "Globals::sensY") Globals::sensY = std::stoi(value);
 					else if (key == "Globals::styleChanged") Globals::styleChanged = value == "1";
+					else if (key == "Globals::saveOnClose") Globals::saveOnClose = value == "1";
 					else if (key == "Overlay::isActive") Overlay::isActive = value == "1";
 					else if (key == "Overlay::visualizeSound") Overlay::visualizeSound = value == "1";
 					else if (key == "Macros::bhop") Macros::bhop = value == "1";
@@ -592,6 +594,7 @@ namespace MenuConfig {
 		configFile << "Globals::sensX=" << Globals::sensX << '\n';
 		configFile << "Globals::sensY=" << Globals::sensY << '\n';
 		configFile << "Globals::styleChanged=" << Globals::styleChanged << '\n';
+		configFile << "Globals::saveOnClose=" << Globals::saveOnClose << '\n';
 		// *** Overlay ***
 		configFile << "Overlay::isActive=" << Overlay::isActive << '\n';
 		configFile << "Overlay::visualizeSound=" << Overlay::visualizeSound << '\n';
