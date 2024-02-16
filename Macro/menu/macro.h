@@ -622,6 +622,8 @@ namespace MenuConfig {
 					else if (key == "Aimbot::isActive") Aimbot::isActive = value == "1";
 					else if (key == "Aimbot::useAi") Aimbot::useAi = value == "1";
 					else if (key == "Aimbot::usesHumanAnatomy") Aimbot::usesHumanAnatomy = value == "1";
+					else if (key == "Globals::hasMaxTime") Globals::hasMaxTime = value == "1";
+					else if (key == "Globals::maxTime") Globals::maxTime = std::stoi(value);
 					// Add more settings as needed
 				}
 			}
@@ -691,6 +693,9 @@ namespace MenuConfig {
 		configFile << "Aimbot::isActive=" << Aimbot::isActive << '\n';
 		configFile << "Aimbot::useAi=" << Aimbot::useAi << '\n';
 		configFile << "Aimbot::usesHumanAnatomy=" << Aimbot::usesHumanAnatomy << '\n';
+		// *** Globals ***
+		configFile << "Globals::hasMaxTime=" << Globals::hasMaxTime << '\n';
+		configFile << "Globals::maxTime=" << Globals::maxTime << '\n';
 
 
 
