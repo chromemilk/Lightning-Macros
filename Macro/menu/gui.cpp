@@ -371,91 +371,76 @@ void gui::Render() noexcept
 
 
 	if (Globals::styleChanged == false) {
+		auto& colors = style.Colors;
 
-		auto& colors = ImGui::GetStyle().Colors;
-		// Main background
-		colors[ImGuiCol_WindowBg] = ImVec4{ 0.10f, 0.10f, 0.10f, 1.00f };
+// Use a modern, flat, and slightly darker background
+colors[ImGuiCol_WindowBg] = ImVec4{0.09f, 0.09f, 0.09f, 1.00f};
 
-		// Menu Bar
-		colors[ImGuiCol_MenuBarBg] = ImVec4{ 0.14f, 0.14f, 0.14f, 1.00f };
+// Subtle differences for the menu bar to blend with the background
+colors[ImGuiCol_MenuBarBg] = ImVec4{0.1f, 0.1f, 0.1f, 1.00f};
 
-		// Borders
-		colors[ImGuiCol_Border] = ImVec4{ 0.23f, 0.23f, 0.23f, 1.00f };
-		colors[ImGuiCol_BorderShadow] = ImVec4{ 0.00f, 0.00f, 0.00f, 0.00f }; // Clear shadow for a cleaner look
+// Simplify borders to blend in, reducing visual noise
+colors[ImGuiCol_Border] = ImVec4{0.1f, 0.1f, 0.1f, 1.00f};
+colors[ImGuiCol_BorderShadow] = ImVec4{0.0f, 0.0f, 0.0f, 0.0f};
 
-		// Text
-		colors[ImGuiCol_Text] = ImVec4{ 0.90f, 0.90f, 0.90f, 1.00f };
-		colors[ImGuiCol_TextDisabled] = ImVec4{ 0.60f, 0.60f, 0.60f, 1.00f };
+// Soften text colors for better readability and less strain
+colors[ImGuiCol_Text] = ImVec4{0.8f, 0.8f, 0.8f, 1.00f};
+colors[ImGuiCol_TextDisabled] = ImVec4{0.5f, 0.5f, 0.5f, 1.00f};
 
-		// Headers
-		colors[ImGuiCol_Header] = ImVec4{ 0.40f, 0.40f, 0.40f, 1.00f };
-		colors[ImGuiCol_HeaderHovered] = ImVec4{ 0.45f, 0.45f, 0.45f, 1.00f };
-		colors[ImGuiCol_HeaderActive] = ImVec4{ 0.53f, 0.53f, 0.53f, 1.00f };
+// Use more nuanced colors for interactive elements to provide a gentle feedback loop
+colors[ImGuiCol_Header] = ImVec4{0.3f, 0.3f, 0.3f, 1.00f};
+colors[ImGuiCol_HeaderHovered] = ImVec4{0.35f, 0.35f, 0.35f, 1.00f};
+colors[ImGuiCol_HeaderActive] = ImVec4{0.4f, 0.4f, 0.4f, 1.00f};
 
-		// Buttons
-		colors[ImGuiCol_Button] = ImVec4{ 0.25f, 0.25f, 0.25f, 1.00f };
-		colors[ImGuiCol_ButtonHovered] = ImVec4{ 0.30f, 0.30f, 0.30f, 1.00f };
-		colors[ImGuiCol_ButtonActive] = ImVec4{ 0.35f, 0.35f, 0.35f, 1.00f };
+// Soften button colors for a flatter and more modern look
+colors[ImGuiCol_Button] = ImVec4{0.2f, 0.2f, 0.2f, 1.00f};
+colors[ImGuiCol_ButtonHovered] = ImVec4{0.25f, 0.25f, 0.25f, 1.00f};
+colors[ImGuiCol_ButtonActive] = ImVec4{0.3f, 0.3f, 0.3f, 1.00f};
 
-		// CheckMark
-		colors[ImGuiCol_CheckMark] = ImVec4{ 0.90f, 0.90f, 0.00f, 1.00f }; // Yellow for visibility
+// Modernize CheckMark and Slider with a vibrant, yet soft color for visibility
+colors[ImGuiCol_CheckMark] = ImVec4{0.4f, 0.85f, 0.4f, 1.00f}; // Soft green
+colors[ImGuiCol_SliderGrab] = ImVec4{0.4f, 0.85f, 0.4f, 1.00f};
+colors[ImGuiCol_SliderGrabActive] = ImVec4{0.5f, 0.9f, 0.5f, 1.00f};
 
-		// Popups
-		colors[ImGuiCol_PopupBg] = ImVec4{ 0.12f, 0.12f, 0.12f, 0.92f };
+// Update frames to be flatter and integrate better with the background
+colors[ImGuiCol_FrameBg] = ImVec4{0.1f, 0.1f, 0.1f, 1.00f};
+colors[ImGuiCol_FrameBgHovered] = ImVec4{0.12f, 0.12f, 0.12f, 1.00f};
+colors[ImGuiCol_FrameBgActive] = ImVec4{0.14f, 0.14f, 0.14f, 1.00f};
 
-		// Slider
-		colors[ImGuiCol_SliderGrab] = ImVec4{ 0.90f, 0.90f, 0.00f, 1.00f }; // Yellow for visibility
-		colors[ImGuiCol_SliderGrabActive] = ImVec4{ 1.00f, 1.00f, 0.14f, 1.00f }; // Bright yellow for active state
+// Tabs and titles to have a minimalistic touch with subtle contrasts
+colors[ImGuiCol_Tab] = ImVec4{0.15f, 0.15f, 0.15f, 1.00f};
+colors[ImGuiCol_TabHovered] = ImVec4{0.38f, 0.38f, 0.38f, 1.00f};
+colors[ImGuiCol_TabActive] = ImVec4{0.28f, 0.28f, 0.28f, 1.00f};
+colors[ImGuiCol_TabUnfocused] = ImVec4{0.15f, 0.15f, 0.15f, 1.00f};
+colors[ImGuiCol_TabUnfocusedActive] = ImVec4{0.2f, 0.2f, 0.2f, 1.00f};
 
-		// Frame BG
-		colors[ImGuiCol_FrameBg] = ImVec4{ 0.20f, 0.20f, 0.20f, 1.00f };
-		colors[ImGuiCol_FrameBgHovered] = ImVec4{ 0.25f, 0.25f, 0.25f, 1.00f };
-		colors[ImGuiCol_FrameBgActive] = ImVec4{ 0.30f, 0.30f, 0.30f, 1.00f };
+// Adjust scrollbar to be less intrusive
+colors[ImGuiCol_ScrollbarBg] = ImVec4{0.02f, 0.02f, 0.02f, 1.0f};
+colors[ImGuiCol_ScrollbarGrab] = ImVec4{0.2f, 0.2f, 0.2f, 1.0f};
+colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4{0.25f, 0.25f, 0.25f, 1.0f};
+colors[ImGuiCol_ScrollbarGrabActive] = ImVec4{0.3f, 0.3f, 0.3f, 1.0f};
 
-		// Tabs
-		colors[ImGuiCol_Tab] = ImVec4{ 0.20f, 0.20f, 0.20f, 1.00f };
-		colors[ImGuiCol_TabHovered] = ImVec4{ 0.60f, 0.60f, 0.60f, 1.00f };
-		colors[ImGuiCol_TabActive] = ImVec4{ 0.28f, 0.28f, 0.28f, 1.00f };
-		colors[ImGuiCol_TabUnfocused] = ImVec4{ 0.15f, 0.15f, 0.15f, 1.00f };
-		colors[ImGuiCol_TabUnfocusedActive] = ImVec4{ 0.25f, 0.25f, 0.25f, 1.00f };
+// Maintain the modern look with soft, yet visible separators and resize grips
+colors[ImGuiCol_Separator] = ImVec4{0.2f, 0.2f, 0.2f, 1.0f};
+colors[ImGuiCol_SeparatorHovered] = ImVec4{0.3f, 0.3f, 0.3f, 1.0f};
+colors[ImGuiCol_SeparatorActive] = ImVec4{0.4f, 0.4f, 0.4f, 1.0f};
+colors[ImGuiCol_ResizeGrip] = ImVec4{0.2f, 0.2f, 0.2f, 0.3f};
+colors[ImGuiCol_ResizeGripHovered] = ImVec4{0.28f, 0.28f, 0.28f, 0.6f};
+colors[ImGuiCol_ResizeGripActive] = ImVec4{0.4f, 0.4f, 0.4f, 0.9f};
 
-		// Title
-		colors[ImGuiCol_TitleBg] = ImVec4{ 0.12f, 0.12f, 0.12f, 1.0f }; // Dark gray for title background
-		colors[ImGuiCol_TitleBgActive] = ImVec4{ 0.18f, 0.18f, 0.18f, 1.0f }; // Slightly lighter gray for active title
-		colors[ImGuiCol_TitleBgCollapsed] = ImVec4{ 0.12f, 0.12f, 0.12f, 1.0f }; // Dark gray for collapsed title
+		style.TabRounding = 4;        // Less pronounced rounded tabs for a subtler look
+		style.ScrollbarRounding = 9;  // Soft, rounded scrollbar for smoother scrolling
+		style.WindowRounding = 5;     // Softly rounded corners for a modern touch
+		style.GrabRounding = 4;       // Rounded grab handles for a cohesive look
+		style.FrameRounding = 4;      // Rounded frames for a softer interface
+		style.PopupRounding = 5;      // Consistently rounded pop-up windows for uniformity
+		style.ChildRounding = 5;      // Unified rounded look for child windows
 
-		// Scrollbar
-		colors[ImGuiCol_ScrollbarBg] = ImVec4{ 0.05f, 0.05f, 0.05f, 1.0f }; // Darker gray for scrollbar background
-		colors[ImGuiCol_ScrollbarGrab] = ImVec4{ 0.18f, 0.18f, 0.18f, 1.0f }; // Gray for scrollbar grab
-		colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4{ 0.21f, 0.21f, 0.21f, 1.0f }; // Slightly lighter gray for hovered scrollbar grab
-		colors[ImGuiCol_ScrollbarGrabActive] = ImVec4{ 0.24f, 0.24f, 0.24f, 1.0f }; // Even lighter gray for active scrollbar grab
-
-		// Separator
-		colors[ImGuiCol_Separator] = ImVec4{ 0.14f, 0.14f, 0.14f, 1.0f }; // Gray for separator
-		colors[ImGuiCol_SeparatorHovered] = ImVec4{ 0.26f, 0.26f, 0.26f, 1.0f }; // Lighter gray for hovered separator
-		colors[ImGuiCol_SeparatorActive] = ImVec4{ 0.90f, 0.90f, 0.00f, 1.0f }; // Yellow for active separator
-
-		// Resize Grip
-		colors[ImGuiCol_ResizeGrip] = ImVec4{ 0.18f, 0.18f, 0.18f, 0.25f }; // Semi-transparent gray for resize grip
-		colors[ImGuiCol_ResizeGripHovered] = ImVec4{ 0.21f, 0.21f, 0.21f, 0.67f }; // Slightly lighter and more opaque for hovered resize grip
-		colors[ImGuiCol_ResizeGripActive] = ImVec4{ 0.90f, 0.90f, 0.00f, 1.0f }; // Yellow for active resize grip
-
-
-
-		// Increase the rounding for a more bubbly look
-		style.TabRounding = 8;        // More rounded tabs
-		style.ScrollbarRounding = 12; // Very rounded scrollbar
-		style.WindowRounding = 6;     // Gently rounded corners for the windows
-		style.GrabRounding = 6;       // Rounded grab handles on sliders
-		style.FrameRounding = 6;      // Rounded frames
-		style.PopupRounding = 6;      // Rounded pop-up windows
-		style.ChildRounding = 6;      // Rounded child windows
-
-		// You might also want to increase padding and spacing to enhance the bubbly effect
-		style.FramePadding = ImVec2(6, 6);       // Padding within the frames
-		style.ItemSpacing = ImVec2(6, 6);        // Spacing between items/widgets
-		style.ItemInnerSpacing = ImVec2(6, 6);   // Spacing within a complex item (e.g., within a combo box)
-		style.ScrollbarSize = 20;
+		// Adjust padding and spacing for a cleaner layout and better usability
+		style.FramePadding = ImVec2(6, 6);     // Slightly larger padding within frames for a roomier feel
+		style.ItemSpacing = ImVec2(6, 6);      // Increased spacing between items for clarity
+		style.ItemInnerSpacing = ImVec2(8, 8); // More internal spacing for a less cramped look
+		style.ScrollbarSize = 18;
 	}
 	else if (Globals::styleChanged == true) {
 
