@@ -29,6 +29,8 @@ namespace No_recoil {
 	// Makes the mouse movement more human like by adding small increments to the mouse movement to mess with the aim
 	inline bool humanize = false;
 	inline bool wasPressed = false;
+	inline int maxValueY = 25;
+	inline int maxValueX = 20;	
 }
 // The next few namespaces are for the combo boxes in the gui and the hotkeys
 namespace Preset {
@@ -595,6 +597,8 @@ namespace MenuConfig {
 					else if (key == "No_recoil::multiplier") No_recoil::multiplier = std::stoi(value);
 					else if (key == "No_recoil::humanize") No_recoil::humanize = value == "1";
 					else if (key == "No_recoil::adsOnly") No_recoil::adsOnly = value == "1";
+					else if (key == "No_recoil::maxValueY") No_recoil::maxValueY = std::stoi(value);
+					else if (key == "No_recoil::maxValueX") No_recoil::maxValueX = std::stoi(value);
 					else if (key == "Triggerbot::isActive") Triggerbot::isActive = value == "1";
 					else if (key == "Triggerbot::useAi") Triggerbot::useAi = value == "1";
 					else if (key == "Triggerbot::HotKey") Triggerbot::HotKey = std::stoi(value);
@@ -658,6 +662,8 @@ namespace MenuConfig {
 		configFile << "No_recoil::multiplier=" << No_recoil::multiplier << '\n';
 		configFile << "No_recoil::humanize=" << No_recoil::humanize << '\n';
 		configFile << "No_recoil::adsOnly=" << No_recoil::adsOnly << '\n';
+		configFile << "No_recoil::maxValueY=" << No_recoil::maxValueY << '\n';
+		configFile << "No_recoil::maxValueX=" << No_recoil::maxValueX << '\n';
 		// *** PixelBot ***
 		configFile << "Triggerbot::isActive=" << Triggerbot::isActive << '\n';
 		configFile << "Triggerbot::useAi=" << Triggerbot::useAi << '\n';

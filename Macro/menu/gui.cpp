@@ -406,9 +406,9 @@ void gui::Render() noexcept
 	colors[ImGuiCol_SliderGrabActive] = ImVec4{0.5f, 0.9f, 0.5f, 1.00f};
 
 	// Update frames to be flatter and integrate better with the background
-	colors[ImGuiCol_FrameBg] = ImVec4{0.1f, 0.1f, 0.1f, 1.00f};
-	colors[ImGuiCol_FrameBgHovered] = ImVec4{0.12f, 0.12f, 0.12f, 1.00f};
-	colors[ImGuiCol_FrameBgActive] = ImVec4{0.14f, 0.14f, 0.14f, 1.00f};
+	colors[ImGuiCol_FrameBg] = ImVec4{0.2f, 0.2f, 0.2f, 1.00f};
+	colors[ImGuiCol_FrameBgHovered] = ImVec4{0.25f, 0.25f, 0.25f, 1.00f};
+	colors[ImGuiCol_FrameBgActive] = ImVec4{0.3f, 0.3f, 0.3f, 1.00f};
 
 	// Tabs and titles to have a minimalistic touch with subtle contrasts
 	colors[ImGuiCol_Tab] = ImVec4{0.15f, 0.15f, 0.15f, 1.00f};
@@ -766,19 +766,17 @@ void gui::Render() noexcept
 			ImGui::SetCursorPos(ImVec2(gui::WIDTH / 3, 60));
 			ImGui::Text("           === Anti-Recoil ===");
 			ImGui::Spacing();
-			int min_valueY = 0;
-			int min_valueX = -20;
-			if (No_recoil::strengthY > 25) {
-				No_recoil::strengthY = 25;
+			if (No_recoil::strengthY > No_recoil::maxValueY) {
+				No_recoil::strengthY = No_recoil::maxValueY;
 			}
 			else if (No_recoil::strengthY < 0) {
 				No_recoil::strengthY = 0;
 			}
-			if (No_recoil::strengthX < -20) {
-				No_recoil::strengthX = -20;
+			if (No_recoil::strengthX < -1 * No_recoil::maxValueX) {
+				No_recoil::strengthX = -1 * No_recoil::maxValueX;
 			}
-			else if (No_recoil::strengthX > 20) {
-				No_recoil::strengthX = 20;
+			else if (No_recoil::strengthX > No_recoil::maxValueX) {
+				No_recoil::strengthX = No_recoil::maxValueX;
 			};
 			ImGui::TextColored(ImVec4(0, 1, 0, 1), "F1");
 			ImGui::SameLine();
@@ -797,7 +795,7 @@ void gui::Render() noexcept
 			ImGui::Text("to decrease the vertical strength");
 			ImGui::Spacing();
 			ImGui::Spacing();
-			ImGui::SliderInt("Vertical Strength", &No_recoil::strengthY, min_valueY, 25);
+			ImGui::SliderInt("Vertical Strength", &No_recoil::strengthY, 0, No_recoil::maxValueY);
 			//ImGui::InputInt("Vertical Manual", &No_recoil::strengthY);
 			ImGui::SetCursorPos(ImVec2(252, 223));
 			if (ImGui::ArrowButton("##left", ImGuiDir_Left)) {
@@ -808,7 +806,7 @@ void gui::Render() noexcept
 				No_recoil::strengthY++;
 			}
 			ImGui::Spacing();
-			ImGui::SliderInt("Horizontal Strength", &No_recoil::strengthX, min_valueX, 20);
+			ImGui::SliderInt("Horizontal Strength", &No_recoil::strengthX, -1 * No_recoil::maxValueX, No_recoil::maxValueX);
 			//ImGui::InputInt("Horizontal Manual", &No_recoil::strengthX);
 			ImGui::SetCursorPos(ImVec2(252, 293));
 			if (ImGui::ArrowButton("##leftX",ImGuiDir_Left)) {
@@ -1073,7 +1071,10 @@ void gui::Render() noexcept
 				}
 			}
 			ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
-
+            ImGui::Text("Set the max values for the anti-recoil");
+			ImGui::SliderInt("Max Vertical", &No_recoil::maxValueY, 0, 50);
+			ImGui::SliderInt("Max/min Horizontal", &No_recoil::maxValueX, 0, 30);
+			ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
 			if (ImGui::Button("Reset")) {
 				Misc::fpsCounter = false;
 				Controller::hasController = false;
@@ -1194,7 +1195,9 @@ void gui::Render() noexcept
 			ImGui::Text("           === Config ===");
 			auto dirIter = std::filesystem::directory_iterator(std::filesystem::current_path());
 			static char configNameBuffer[128] = "Config 1";
-			ImGui::InputText("Config Name", configNameBuffer, sizeof(configNameBuffer));
+			ImGui::SetCursorPos(ImVec2(180, 80));
+			ImGui::InputText("", configNameBuffer, sizeof(configNameBuffer));
+			ImGui::SetCursorPos(ImVec2(290, 120));
 			if (ImGui::Button("Create Config")) {
 				MenuConfig::saveConfig((std::string)configNameBuffer);
 			}
