@@ -30,7 +30,11 @@ namespace No_recoil {
 	inline bool humanize = false;
 	inline bool wasPressed = false;
 	inline int maxValueY = 25;
-	inline int maxValueX = 20;	
+	inline int maxValueX = 20;
+	inline int pistolY = 0;
+	inline bool usingSecondary = false;
+	inline bool zToSwitch = true;
+	inline bool wasF12Pressed = false;
 }
 // The next few namespaces are for the combo boxes in the gui and the hotkeys
 namespace Preset {
@@ -183,61 +187,13 @@ namespace Macros {
 
 
 namespace PullMouse {
-/*	inline void Run(float SMOOTHING_FACTOR, int DRAG_RATE_X, int DRAG_RATE_Y) {
-		if (Globals::currentTime * 1000 > Globals::maxTime * 1000 && Globals::hasMaxTime == true) {
-			return;
-		}
-		// Set local scope smoothing
-		float smoothingX = SMOOTHING_FACTOR;
-		float smoothingY = SMOOTHING_FACTOR;
-		// If the drag rate is 0 then the smoothing should also be zero 
-		if (DRAG_RATE_X == 0) {
-			smoothingX = 0;
-		}
-		if (DRAG_RATE_Y == 0) {
-			smoothingY = 0;
-		}
-		// If the LMB is pressed, we get the current position of the cursor and then add to it depending on the smoothing, and drag rate
-		if (GetAsyncKeyState(VK_LBUTTON)) {
-			Globals::currentTime++;
-			POINT currentPos;
-			GetCursorPos(&currentPos);
-			// handling right click
-			if (No_recoil::adsOnly == true && GetAsyncKeyState(VK_RBUTTON) == false) {
-				return;
-			}
-			if (SMOOTHING_FACTOR >= 0) {
-				// If we have a delay, wait for up to one second
-				if (No_recoil::pull_delay > 0) {
-					Sleep(No_recoil::pull_delay);
-				}
-				// Higher level/eaiser way to set cursor position
-				if (No_recoil::within_program == false) {
-					// Taking the drag rate and then multiplying it by a smooting factor, then multiplying it by a user selected multiplier
-					SetCursorPos((currentPos.x + ((int)std::ceil(((DRAG_RATE_X * smoothingX) * No_recoil::multiplier)))), (currentPos.y + ((int)std::ceil((DRAG_RATE_Y * smoothingY) * No_recoil::multiplier))));
-				}
-				else if (No_recoil::within_program == true) {
-					//int newX = currentPos.x + static_cast<int>(std::ceil(DRAG_RATE_X * smoothingX));
-					// newY = currentPos.y + static_cast<int>(std::ceil(DRAG_RATE_Y * smoothingY));
-					// The mouse_event function is absolute position based so instead of using our relative position, we just directly send commands to mouse the mouse down at a pace of deltaX and deltaY
-					int deltaX = static_cast<int>(std::ceil((DRAG_RATE_X * smoothingX) * No_recoil::multiplier));
-					int deltaY = static_cast<int>(std::ceil((DRAG_RATE_Y * smoothingY) * No_recoil::multiplier));
-					//mouse_event(MOUSEEVENTF_MOVE, deltaX, deltaY, NULL, NULL);
-					if (No_recoil::humanize == true) {
-						mouse_event(MOUSEEVENTF_MOVE, deltaX + 2, deltaY - 3, NULL, NULL);
-
-					}
-					else {
-						mouse_event(MOUSEEVENTF_MOVE, deltaX, deltaY, NULL, NULL);
-					}
-				}
-				Sleep(20);
-			}
-		}
-	}*/
 	inline void Run(float SMOOTHING_FACTOR, int DRAG_RATE_X, int DRAG_RATE_Y) {
 		bool isPressed = (GetAsyncKeyState(VK_LBUTTON) & 0x8000) != 0;
-
+		if (No_recoil::usingSecondary == true) {
+			DRAG_RATE_X = 0;
+			DRAG_RATE_Y = No_recoil::pistolY;
+			SMOOTHING_FACTOR = 1.f;
+		}
 		// Reset currentTime when the left mouse button is released
 		if (No_recoil::wasPressed && !isPressed) {
 			Globals::currentTime = 0; // Reset the timer
@@ -371,6 +327,15 @@ namespace CheckInputs {
 
 		if (GetAsyncKeyState(VK_F3)) {
 			gui::isRunning = false;
+		}
+
+		if (No_recoil::zToSwitch) {
+			bool isF10CurrentlyPressed = GetAsyncKeyState(VK_F12) & 0x8000; // Check if the high-order bit is set
+			if (isF10CurrentlyPressed && !No_recoil::wasF12Pressed) {
+				// Toggle only if F10 was not pressed before but is pressed now
+				No_recoil::usingSecondary = !No_recoil::usingSecondary;
+			}
+			No_recoil::wasF12Pressed = isF10CurrentlyPressed; // Update the previous state for the next check
 		}
 	}
 }
@@ -599,6 +564,7 @@ namespace MenuConfig {
 					else if (key == "No_recoil::adsOnly") No_recoil::adsOnly = value == "1";
 					else if (key == "No_recoil::maxValueY") No_recoil::maxValueY = std::stoi(value);
 					else if (key == "No_recoil::maxValueX") No_recoil::maxValueX = std::stoi(value);
+					else if (key == "No_recoil::pistolY") No_recoil::pistolY = std::stoi(value);
 					else if (key == "Triggerbot::isActive") Triggerbot::isActive = value == "1";
 					else if (key == "Triggerbot::useAi") Triggerbot::useAi = value == "1";
 					else if (key == "Triggerbot::HotKey") Triggerbot::HotKey = std::stoi(value);
@@ -664,6 +630,7 @@ namespace MenuConfig {
 		configFile << "No_recoil::adsOnly=" << No_recoil::adsOnly << '\n';
 		configFile << "No_recoil::maxValueY=" << No_recoil::maxValueY << '\n';
 		configFile << "No_recoil::maxValueX=" << No_recoil::maxValueX << '\n';
+		configFile << "No_recoil::pistolY=" << No_recoil::pistolY << '\n';	
 		// *** PixelBot ***
 		configFile << "Triggerbot::isActive=" << Triggerbot::isActive << '\n';
 		configFile << "Triggerbot::useAi=" << Triggerbot::useAi << '\n';

@@ -795,37 +795,92 @@ void gui::Render() noexcept
 			ImGui::Text("to decrease the vertical strength");
 			ImGui::Spacing();
 			ImGui::Spacing();
-			ImGui::SliderInt("Vertical Strength", &No_recoil::strengthY, 0, No_recoil::maxValueY);
-			//ImGui::InputInt("Vertical Manual", &No_recoil::strengthY);
-			ImGui::SetCursorPos(ImVec2(252, 223));
-			if (ImGui::ArrowButton("##left", ImGuiDir_Left)) {
-				No_recoil::strengthY--;
+			ImGui::BeginTabBar("Recoil");
+			if (ImGui::BeginTabItem("Primary")) {
+				ImGui::SliderInt("Vertical Strength", &No_recoil::strengthY, 0, No_recoil::maxValueY);
+				ImGui::Spacing();
+				ImGui::Spacing();
+				ImGui::Spacing();
+
+				//ImGui::InputInt("Vertical Manual", &No_recoil::strengthY);
+				ImGui::SetCursorPos(ImVec2(252, 255));
+				if (ImGui::ArrowButton("##left", ImGuiDir_Left)) {
+					No_recoil::strengthY--;
+				}
+				ImGui::SameLine();
+				if (ImGui::ArrowButton("##right", ImGuiDir_Right)) {
+					No_recoil::strengthY++;
+				}
+				ImGui::Spacing();
+				ImGui::SliderInt("Horizontal Strength", &No_recoil::strengthX, -1 * No_recoil::maxValueX, No_recoil::maxValueX);
+				//ImGui::InputInt("Horizontal Manual", &No_recoil::strengthX);
+				ImGui::SetCursorPos(ImVec2(252, 325));
+				if (ImGui::ArrowButton("##leftX", ImGuiDir_Left)) {
+					No_recoil::strengthX--;
+				}
+				ImGui::SameLine();
+				if (ImGui::ArrowButton("##rightX", ImGuiDir_Right)) {
+					No_recoil::strengthX++;
+				}
+				ImGui::Spacing();
+				ImGui::SliderFloat("Smoothing", &No_recoil::smoothing, 1.f, 0.f);
+				ImGui::Spacing();
+				ImGui::SliderInt("Delay (milliseconds)", &No_recoil::pull_delay, 0.f, 100.f);
+				ImGui::Spacing();
+				ImGui::SliderFloat("Multiplier", &No_recoil::multiplier, 1.f, 2.0f, "%0.1f", ImGuiSliderFlags_NoInput);
+				ImGui::Spacing();
+				if (ImGui::Combo("Preset", &Preset::CurrentPreset, "DEFAULT\0PISTOL\0DMR\0RIFLE")) {
+					Preset::SetPreset(Preset::CurrentPreset);
+				}
+				ImGui::EndTabItem();
 			}
-			ImGui::SameLine();
-			if (ImGui::ArrowButton("##right", ImGuiDir_Right)) {
-				No_recoil::strengthY++;
+			if (ImGui::BeginTabItem("Secondary")) {
+				ImGui::SliderInt("Vertical Strength", &No_recoil::pistolY, 0, 10);
+				ImGui::Spacing();
+				ImGui::Spacing();
+				ImGui::Spacing();
+				ImGui::Spacing();
+				ImGui::Spacing();
+				ImGui::Spacing();
+				ImGui::Spacing();
+				ImGui::Spacing();
+				ImGui::Spacing();
+				ImGui::Spacing();
+				ImGui::Spacing();	
+				ImGui::Spacing();
+				ImGui::Spacing();
+				ImGui::Spacing();
+				ImGui::Spacing();
+				ImGui::Spacing();
+				ImGui::Spacing();
+				ImGui::Spacing();
+				ImGui::Spacing();
+				ImGui::Spacing();
+				ImGui::Spacing();
+				ImGui::Spacing();
+				ImGui::Spacing();
+				ImGui::Spacing();
+				ImGui::Spacing();
+				ImGui::Spacing();
+				ImGui::Spacing();
+				ImGui::Spacing();
+				ImGui::Spacing();
+				ImGui::Spacing();
+				ImGui::Spacing();
+				ImGui::Spacing();
+				ImGui::Spacing();
+				ImGui::Spacing();
+				ImGui::Spacing();
+				ImGui::Spacing();
+				ImGui::Spacing();
+				ImGui::Spacing();
+				ImGui::Spacing();
+				ImGui::Spacing();
+				ImGui::Spacing();
+				ImGui::Spacing();
+				ImGui::EndTabItem();
 			}
-			ImGui::Spacing();
-			ImGui::SliderInt("Horizontal Strength", &No_recoil::strengthX, -1 * No_recoil::maxValueX, No_recoil::maxValueX);
-			//ImGui::InputInt("Horizontal Manual", &No_recoil::strengthX);
-			ImGui::SetCursorPos(ImVec2(252, 293));
-			if (ImGui::ArrowButton("##leftX",ImGuiDir_Left)) {
-				No_recoil::strengthX--;
-			}
-			ImGui::SameLine();
-			if (ImGui::ArrowButton("##rightX", ImGuiDir_Right)) {
-				No_recoil::strengthX++;
-			}
-			ImGui::Spacing();
-			ImGui::SliderFloat("Smoothing", &No_recoil::smoothing, 1.f, 0.f);
-			ImGui::Spacing();
-			ImGui::SliderInt("Delay (milliseconds)", &No_recoil::pull_delay, 0.f, 100.f);
-			ImGui::Spacing();
-			ImGui::SliderFloat("Multiplier", &No_recoil::multiplier, 1.f, 2.0f, "%0.1f", ImGuiSliderFlags_NoInput);
-			ImGui::Spacing();
-			if (ImGui::Combo("Preset", &Preset::CurrentPreset, "DEFAULT\0PISTOL\0DMR\0RIFLE")) {
-				Preset::SetPreset(Preset::CurrentPreset);
-			}
+			ImGui::EndTabBar();
 			ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
 			ImGui::Checkbox("Active", &No_recoil::active);
 			ImGui::Checkbox("Anti-Cheat bypass", &No_recoil::within_program);
@@ -840,11 +895,13 @@ void gui::Render() noexcept
 				// End the tooltip block
 				ImGui::EndTooltip();
 			}
-			ImGui::SetCursorPos(ImVec2(300, 478));
+			ImGui::SetCursorPos(ImVec2(300, 510));
 			ImGui::Checkbox("ADS Only", &No_recoil::adsOnly);
+			ImGui::SetCursorPos(ImVec2(300, 540));
+			ImGui::Checkbox("Use F12 to switch", &No_recoil::zToSwitch);
 
 			ImGui::Spacing();
-			ImGui::SetCursorPos(ImVec2(125, 580));	
+			ImGui::SetCursorPos(ImVec2(300, 575));	
 			if (ImGui::Button("Reset")) {
 				No_recoil::active = false;
 				No_recoil::strengthX = 0;
@@ -863,6 +920,17 @@ void gui::Render() noexcept
 				ImGui::Text("Anti-Recoil Status:");
 				ImGui::SameLine();
 				ImGui::TextColored(ImVec4(1, 0, 0, 1), "Not Active");
+			}
+			ImGui::SameLine();
+			if (No_recoil::usingSecondary == true) {
+				ImGui::Text("Using secnodary:");
+				ImGui::SameLine();
+				ImGui::TextColored(ImVec4(0, 1, 0, 1), "Yes");
+			}
+			else {
+				ImGui::Text("Using secnodary:");
+				ImGui::SameLine();
+				ImGui::TextColored(ImVec4(1, 0, 0, 1), "No");
 			}
 		}
 		if (Globals::ActiveTab == 2)
