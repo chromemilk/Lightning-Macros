@@ -1206,22 +1206,32 @@ void gui::Render() noexcept
 
 			for (auto& entry : dirIter)
 			{
-
 				if (entry.is_regular_file() && MenuConfig::isTxtFile(entry.path().filename().string().c_str())) {
 					++fileCount;
-					std::string name = entry.path().filename().string().c_str();
+					std::string name = entry.path().filename().string();
+					std::string path = entry.path().string();
+
+					// Unique ID for each entry
+					ImGui::PushID(name.c_str());
+
 					if (ImGui::Button(name.c_str())) {
-						std::string path = entry.path().string().c_str();
 						MenuConfig::setConfig(path);
 					}
 					ImGui::SameLine();
+
+					// Ensure each "Delete" button has a unique ID within the loop
 					if (ImGui::Button("Delete")) {
-						std::string path = entry.path().string().c_str();
 						MenuConfig::deleteConfig(path);
 					}
-				}
 
+					// Pop the ID after the buttons for this entry
+					ImGui::PopID();
+
+					ImGui::SameLine();
+					ImGui::TextColored(ImVec4(0, 1, 0, 1), "%s", name.c_str());
+				}
 			}
+			ImGui::SetCursorPos(ImVec2(345, 33));
 			ImGui::Text("Config Files:");
 			ImGui::SameLine();
 			ImGui::TextColored(ImVec4(0, 1, 0, 1), "%d", fileCount);
