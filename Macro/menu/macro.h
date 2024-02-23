@@ -10,6 +10,10 @@
 #include <fstream>
 #include <sstream>
 #include <ShlObj.h>
+#include "../imgui/imgui.h"
+#include "../imgui/imgui_impl_dx9.h"
+#include "../imgui/imgui_impl_win32.h"
+#include "../imgui/imgui_internal.h"
 #define DEFAULT 0
 #define PISTOL 1
 #define DMR 2
@@ -32,6 +36,7 @@ namespace No_recoil {
 	inline int maxValueY = 25;
 	inline int maxValueX = 20;
 	inline int pistolY = 0;
+	inline int pistolX = 0;
 	inline bool usingSecondary = false;
 	inline bool zToSwitch = true;
 	inline bool wasF12Pressed = false;
@@ -190,7 +195,7 @@ namespace PullMouse {
 	inline void Run(float SMOOTHING_FACTOR, int DRAG_RATE_X, int DRAG_RATE_Y) {
 		bool isPressed = (GetAsyncKeyState(VK_LBUTTON) & 0x8000) != 0;
 		if (No_recoil::usingSecondary == true) {
-			DRAG_RATE_X = 0;
+			DRAG_RATE_X = No_recoil::pistolX;
 			DRAG_RATE_Y = No_recoil::pistolY;
 			SMOOTHING_FACTOR = 1.f;
 		}
@@ -515,6 +520,14 @@ namespace Triggerbot {
 	}
 }
 
+
+namespace Colors {
+inline bool customColors = false;
+inline bool includeText = false;
+inline float accentColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+inline ImVec4 accentColorImVec4 = ImVec4(accentColor[0], accentColor[1], accentColor[2], accentColor[3]);
+}
+
 namespace MenuConfig {
 	// Filters out non-txt files
 	inline bool isTxtFile(const std::string& fileName) {
@@ -594,6 +607,17 @@ namespace MenuConfig {
 					else if (key == "Aimbot::usesHumanAnatomy") Aimbot::usesHumanAnatomy = value == "1";
 					else if (key == "Globals::hasMaxTime") Globals::hasMaxTime = value == "1";
 					else if (key == "Globals::maxTime") Globals::maxTime = std::stoi(value);
+					else if (key == "Colors::customColors") Colors::customColors = value == "1";
+					else if (key == "Colors::includeText") Colors::includeText = value == "1";
+					else if (key == "Colors::accentColor") {
+						std::istringstream is_value(value);
+						std::string segment;
+						int i = 0;
+						while (std::getline(is_value, segment, ' ')) {
+							Colors::accentColor[i] = std::stof(segment);
+							i++;
+						}
+					}
 					// Add more settings as needed
 				}
 			}
@@ -669,8 +693,10 @@ namespace MenuConfig {
 		// *** Globals ***
 		configFile << "Globals::hasMaxTime=" << Globals::hasMaxTime << '\n';
 		configFile << "Globals::maxTime=" << Globals::maxTime << '\n';
-
-
+		// *** Colors ***
+		configFile << "Colors::customColors=" << Colors::customColors << '\n';
+		configFile << "Colors::includeText=" << Colors::includeText << '\n';
+		configFile << "Colors::accentColor=" << Colors::accentColor[0] << " " << Colors::accentColor[1] << " " << Colors::accentColor[2] << " " << Colors::accentColor[3] << '\n';
 
 		// Close the file
 		configFile.close();
