@@ -1306,8 +1306,21 @@ void gui::Render() noexcept
 				MenuConfig::saveConfig((std::string)configNameBuffer);
 			}
 			ImGui::Spacing();
-			int fileCount = 0;
+			ImGuiStyle& oldStyle = ImGui::GetStyle();
+			float oldWindowRounding = oldStyle.WindowRounding;
+			float oldChildRounding = oldStyle.ChildRounding;
+			ImVec4 oldChildBg = oldStyle.Colors[ImGuiCol_ChildBg];
+			ImVec4 oldBorderColor = oldStyle.Colors[ImGuiCol_Border];
+			float oldBorderSize = oldStyle.WindowBorderSize;
 
+			// Adjust the style for the child window
+			oldStyle.WindowRounding = 5.0f; // Adjust rounding of the corners
+			oldStyle.ChildRounding = 5.0f;
+			oldStyle.Colors[ImGuiCol_Border] = ImVec4(0.85f, 0.85f, 0.78f, 0.7f); // Bone white border color
+			oldStyle.WindowBorderSize = 1.0f; // Set the border size
+			int fileCount = 0;
+			ImGui::SetCursorPos(ImVec2(150, 150));
+			ImGui::BeginChild("Configs", ImVec2(400, 400), true);
 			for (auto& entry : dirIter)
 			{
 				if (entry.is_regular_file() && MenuConfig::isTxtFile(entry.path().filename().string().c_str())) {
@@ -1322,19 +1335,37 @@ void gui::Render() noexcept
 						MenuConfig::setConfig(path);
 					}
 					ImGui::SameLine();
+					if (ImGui::Button("Load")) {
+						MenuConfig::setConfig(path);
+					}
+					ImGui::SameLine();
 
 					// Ensure each "Delete" button has a unique ID within the loop
 					if (ImGui::Button("Delete")) {
 						MenuConfig::deleteConfig(path);
 					}
 
+					ImGui::SameLine();
+					if (ImGui::Button("Open Folder")) {
+						ShellExecute(NULL, "open", "explorer", ".", NULL, SW_SHOWDEFAULT);
+					}
+					ImGui::SameLine();
+					ImGui::Text("Id:");
+					ImGui::SameLine();
+					ImGui::TextColored(ImVec4(0, 1, 0, 1), "%d", fileCount);
+					ImGui::Text("-------------------------------------------------------");
+
 					// Pop the ID after the buttons for this entry
 					ImGui::PopID();
-
-					ImGui::SameLine();
-					ImGui::TextColored(ImVec4(0, 1, 0, 1), "%s", name.c_str());
 				}
 			}
+			ImGui::EndChild();
+
+			style.WindowRounding = oldWindowRounding;
+			style.ChildRounding = oldChildRounding;
+			style.Colors[ImGuiCol_Border] = oldBorderColor;
+			style.WindowBorderSize = oldBorderSize;
+
 			ImGui::SetCursorPos(ImVec2(345, 33));
 			ImGui::Text("Config Files:");
 			ImGui::SameLine();
