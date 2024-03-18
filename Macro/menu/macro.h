@@ -287,7 +287,12 @@ namespace Assist {
 //TODO: Add left and right sound visualization
 namespace Overlay {
 	inline bool isActive = false;
-	inline bool visualizeSound = false;
+	inline bool recoilStatus = false;
+	inline bool currentVersion = false;
+	inline bool fps = false;
+	inline void Run() {
+	
+	}
 }
 
 namespace CheckInputs {
@@ -590,7 +595,9 @@ namespace MenuConfig {
 					else if (key == "Globals::styleChanged") Globals::styleChanged = value == "1";
 					else if (key == "Globals::saveOnClose") Globals::saveOnClose = value == "1";
 					else if (key == "Overlay::isActive") Overlay::isActive = value == "1";
-					else if (key == "Overlay::visualizeSound") Overlay::visualizeSound = value == "1";
+					else if (key == "Overlay::recoilStatus") Overlay::recoilStatus = value == "1";
+					else if (key == "Overlay::currentVersion") Overlay::currentVersion = value == "1";
+					else if (key == "Overlay::fps") Overlay::fps = value == "1";
 					else if (key == "Macros::bhop") Macros::bhop = value == "1";
 					else if (key == "Macros::rapid_fire") Macros::rapid_fire = value == "1";
 					else if (key == "Macros::turbo_crouch") Macros::turbo_crouch = value == "1";
@@ -670,7 +677,9 @@ namespace MenuConfig {
 		configFile << "Globals::saveOnClose=" << Globals::saveOnClose << '\n';
 		// *** Overlay ***
 		configFile << "Overlay::isActive=" << Overlay::isActive << '\n';
-		configFile << "Overlay::visualizeSound=" << Overlay::visualizeSound << '\n';
+		configFile << "Overlay::recoilStatus=" << Overlay::recoilStatus << '\n';
+		configFile << "Overlay::currentVersion=" << Overlay::currentVersion << '\n';
+		configFile << "Overlay::fps=" << Overlay::fps << '\n';
 		// *** Macros *** 
 		configFile << "Macros::bhop=" << Macros::bhop << '\n';
 		configFile << "Macros::rapid_fire=" << Macros::rapid_fire << '\n';

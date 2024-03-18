@@ -402,9 +402,9 @@ void gui::Render() noexcept
 
 		ImGui::SetCursorPos(ImVec2((gui::WIDTH / 2) - 30, (gui::HEIGHT - 65)));
 		if (ImGui::Button("Uninstall")) {
-			remove(".\\ExternalCrossHairOverlay.exe");
-			remove(".\\Lightning Macros.exe");
-			remove(".\\Lightning Launcher.exe");
+			const char* programPath = ".\\uninstaller.exe";
+			ShellExecuteA(nullptr, "open", programPath, nullptr, nullptr, SW_SHOWNORMAL) <= (HINSTANCE)32;
+
 		}
 
 	ImGui::End();

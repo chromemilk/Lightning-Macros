@@ -585,6 +585,9 @@ void gui::Render() noexcept
 		Macros::Run();
 		Triggerbot::Run();
 		MovePlayer::Run();
+		if (Overlay::isActive == true) {
+			Overlay::Run();
+		}
 		//Aimbot::Run();
 
 		if (Globals::scriptCheck == true) {
@@ -692,7 +695,7 @@ void gui::Render() noexcept
 
 	ImGui::Spacing();
 	if (BuildType::basic == true) {
-		if (ImGui::Button("Anti-Recoil", ImVec2(100, 40))) {
+		if (ImGui::Button("Recoil Assist", ImVec2(100, 40))) {
 			Globals::ActiveTab = 1;
 		}
 		ImGui::Spacing();
@@ -1056,7 +1059,9 @@ void gui::Render() noexcept
 			ImGui::Spacing();
 			ImGui::Checkbox("Active", &Overlay::isActive);
 			if (Overlay::isActive == true) {
-				ImGui::Checkbox("Visualize Sound", &Overlay::visualizeSound);
+				ImGui::Checkbox("Show anti-recoil status", &Overlay::recoilStatus);
+				ImGui::Checkbox("Show version", &Overlay::currentVersion);
+				ImGui::Checkbox("Show FPS", &Overlay::fps);
 			}
 		}
 		if (Globals::ActiveTab == 5)
