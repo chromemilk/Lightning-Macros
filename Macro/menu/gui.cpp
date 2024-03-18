@@ -376,6 +376,8 @@ void gui::Render() noexcept
 			colors[ImGuiCol_TitleBg] = ImVec4{ 0.4f, 0.85f, 0.4f, 1.00f };
 			colors[ImGuiCol_TitleBgActive] = ImVec4{ 0.16f, 0.16f, 0.21f, 1.0f };
 			colors[ImGuiCol_TitleBgCollapsed] = ImVec4{ 0.16f, 0.16f, 0.21f, 1.0f };
+			colors[ImGuiCol_ChildBg] = ImVec4{ 0.09f, 0.09f, 0.09f, 1.00f };
+
 			// Use a modern, flat, and slightly darker background
 			colors[ImGuiCol_WindowBg] = ImVec4{ 0.09f, 0.09f, 0.09f, 1.00f };
 
@@ -747,18 +749,8 @@ void gui::Render() noexcept
 	}
 
 	if (BuildType::premium == true) {
-		if (ImGui::Button("Ai Aimbot", ImVec2(100, 40))) {
+		if (ImGui::Button("Gun Profiles", ImVec2(100, 40))) {
 			Globals::ActiveTab = 7;
-		}
-		if (ImGui::IsItemHovered()) {
-			// Begin the tooltip block
-			ImGui::BeginTooltip();
-
-			// Add text to the tooltip
-			ImGui::Text("Not Working");
-
-			// End the tooltip block
-			ImGui::EndTooltip();
 		}
 		ImGui::Spacing();
 		ImGui::Spacing();
@@ -1199,19 +1191,7 @@ void gui::Render() noexcept
 		}
 		if (Globals::ActiveTab == 7) {
 			ImGui::SetCursorPos(ImVec2(gui::WIDTH / 2.8, 60));
-			ImGui::Text("           === Ai Aimbot ===");
-			ImGui::Checkbox("Enable", &Aimbot::isActive);
-			if (Aimbot::isActive == true) {
-				ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
-				ImGui::Spacing();
-				ImGui::Spacing();
-				ImGui::Checkbox("Human Anatomy", &Aimbot::usesHumanAnatomy);
-				ImGui::Spacing();
-				ImGui::Spacing();
-				ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
-				ImGui::Checkbox("Ai Detection", &Aimbot::useAi);
-				ImGui::Checkbox("Auto Lock", &Aimbot::autoLock);
-			}
+			ImGui::Text("    === Recoil Profiles ===");
 
 		}
 		if (Globals::ActiveTab == 8) {
@@ -1314,7 +1294,12 @@ void gui::Render() noexcept
 			ImGuiStyle& oldStyle = ImGui::GetStyle();
 			float oldWindowRounding = oldStyle.WindowRounding;
 			float oldChildRounding = oldStyle.ChildRounding;
-			ImVec4 oldChildBg = oldStyle.Colors[ImGuiCol_ChildBg];
+			if (Globals::styleChanged == true) {
+				ImVec4 oldChildBg = ImVec4(0.0784313753247261f, 0.08627451211214066f, 0.1019607856869698f, 1.0f);
+			}
+			else {
+
+			}
 			ImVec4 oldBorderColor = oldStyle.Colors[ImGuiCol_Border];
 			float oldBorderSize = oldStyle.WindowBorderSize;
 

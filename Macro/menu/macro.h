@@ -10,6 +10,7 @@
 #include <fstream>
 #include <sstream>
 #include <ShlObj.h>
+#include <vector>
 #include "../imgui/imgui.h"
 #include "../imgui/imgui_impl_dx9.h"
 #include "../imgui/imgui_impl_win32.h"
@@ -18,6 +19,7 @@
 #define PISTOL 1
 #define DMR 2
 #define RIFLE 3
+using namespace std;
 
 namespace No_recoil {
 	inline bool adsOnly = false;
@@ -395,13 +397,9 @@ namespace MovePlayer {
 	}
 }
 
-//TODO: Make the aimbot work
-namespace Aimbot {
-	inline bool autoLock = false;
-	inline bool isActive = false;
-	inline bool useAi = false;
-	inline bool usesHumanAnatomy = false;
-
+//TODO: Set up recoil profiles
+namespace Profile {
+	inline vector<int> profileList;
 	inline void Run() {
 			
 	}	
@@ -608,10 +606,10 @@ namespace MenuConfig {
 					else if (key == "Controller::xbox") Controller::xbox = value == "1";
 					else if (key == "Bhop::HotKey") Bhop::HotKey = std::stoi(value);
 					else if (key == "Crouch::HotKey") Crouch::HotKey = std::stoi(value);
-					else if (key == "Aimbot::autoLock") Aimbot::autoLock = value == "1";
-					else if (key == "Aimbot::isActive") Aimbot::isActive = value == "1";
-					else if (key == "Aimbot::useAi") Aimbot::useAi = value == "1";
-					else if (key == "Aimbot::usesHumanAnatomy") Aimbot::usesHumanAnatomy = value == "1";
+				//	else if (key == "Aimbot::autoLock") Aimbot::autoLock = value == "1";
+					//else if (key == "Aimbot::isActive") Aimbot::isActive = value == "1";
+					//else if (key == "Aimbot::useAi") Aimbot::useAi = value == "1";
+					//else if (key == "Aimbot::usesHumanAnatomy") Aimbot::usesHumanAnatomy = value == "1";
 					else if (key == "Globals::hasMaxTime") Globals::hasMaxTime = value == "1";
 					else if (key == "Globals::maxTime") Globals::maxTime = std::stoi(value);
 					else if (key == "Colors::customColors") Colors::customColors = value == "1";
@@ -695,10 +693,10 @@ namespace MenuConfig {
 		configFile << "Bhop::HotKey=" << Bhop::HotKey << '\n';
 		configFile << "Crouch::HotKey=" << Crouch::HotKey << '\n';
 		// *** Aimbot ***
-		configFile << "Aimbot::autoLock=" << Aimbot::autoLock << '\n';
-		configFile << "Aimbot::isActive=" << Aimbot::isActive << '\n';
-		configFile << "Aimbot::useAi=" << Aimbot::useAi << '\n';
-		configFile << "Aimbot::usesHumanAnatomy=" << Aimbot::usesHumanAnatomy << '\n';
+		//configFile << "Aimbot::autoLock=" << Aimbot::autoLock << '\n';
+		//configFile << "Aimbot::isActive=" << Aimbot::isActive << '\n';
+		//configFile << "Aimbot::useAi=" << Aimbot::useAi << '\n';
+		//configFile << "Aimbot::usesHumanAnatomy=" << Aimbot::usesHumanAnatomy << '\n';
 		// *** Globals ***
 		configFile << "Globals::hasMaxTime=" << Globals::hasMaxTime << '\n';
 		configFile << "Globals::maxTime=" << Globals::maxTime << '\n';
