@@ -399,10 +399,26 @@ namespace MovePlayer {
 
 //TODO: Set up recoil profiles
 namespace Profile {
-	inline vector<int> profileList;
-	inline void Run() {
+	inline string join(const vector<string>& vec, const char* delim)
+	{
+		stringstream res;
+		copy(vec.begin(), vec.end(), ostream_iterator<string>(res, delim));
+		return res.str();
+	}
+	inline vector<string> profileList = {"No profile"};
+	inline char profileListChar[] = "";
+	inline int lastLength = 1;
+	inline void loadProfile() {
 			
 	}	
+	inline void saveProiile() {
+
+	}
+	inline void updateList() {
+		if (lastLength > profileList.size() || lastLength < profileList.size()) {
+		
+		}
+	}
 }
 
 // Gets the window handle of the game and checks the value of the pixel just below the center of the screen

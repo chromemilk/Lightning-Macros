@@ -19,6 +19,9 @@
 #include <cstdio>
 #include <tlhelp32.h>
 #include <tchar.h>
+#include <algorithm>
+
+
 
 
 
@@ -278,6 +281,14 @@ void gui::EndRender() noexcept
 	}
 	ImGui::End();
 }*/
+
+
+string join(const vector<string>&vec, const char* delim)
+{
+	stringstream res;
+	copy(vec.begin(), vec.end(), ostream_iterator<string>(res, delim));
+	return res.str();
+}
 
 
 void gui::Render() noexcept
@@ -824,6 +835,11 @@ void gui::Render() noexcept
 			ImGui::Text("to decrease the vertical strength");
 			ImGui::Spacing();
 			ImGui::Spacing();
+			ImGui::SetCursorPos(ImVec2(280, 190));
+			if (ImGui::Combo("Profile", &Preset::CurrentPreset, (char*)Profile::profileListChar)) {
+				Preset::SetPreset(Preset::CurrentPreset);
+			}
+			ImGui::SetCursorPos(ImVec2(125, 190));
 			ImGui::BeginTabBar("Recoil");
 			if (ImGui::BeginTabItem("Primary")) {
 				ImGui::SliderInt("Vertical Strength", &No_recoil::strengthY, 0, No_recoil::maxValueY);
@@ -1284,9 +1300,9 @@ void gui::Render() noexcept
 			ImGui::Text("           === Config ===");
 			auto dirIter = std::filesystem::directory_iterator(std::filesystem::current_path());
 			static char configNameBuffer[128] = "Config 1";
-			ImGui::SetCursorPos(ImVec2(180, 80));
+			ImGui::SetCursorPos(ImVec2(200, 80));
 			ImGui::InputText("", configNameBuffer, sizeof(configNameBuffer));
-			ImGui::SetCursorPos(ImVec2(290, 120));
+			ImGui::SetCursorPos(ImVec2(305, 120));
 			if (ImGui::Button("Create Config")) {
 				MenuConfig::saveConfig((std::string)configNameBuffer);
 			}
