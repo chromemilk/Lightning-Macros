@@ -283,12 +283,7 @@ void gui::EndRender() noexcept
 }*/
 
 
-string join(const vector<string>&vec, const char* delim)
-{
-	stringstream res;
-	copy(vec.begin(), vec.end(), ostream_iterator<string>(res, delim));
-	return res.str();
-}
+
 
 
 void gui::Render() noexcept
@@ -836,9 +831,9 @@ void gui::Render() noexcept
 			ImGui::Spacing();
 			ImGui::Spacing();
 			ImGui::SetCursorPos(ImVec2(280, 190));
-			if (ImGui::Combo("Profile", &Preset::CurrentPreset, (char*)Profile::profileListChar)) {
-				Preset::SetPreset(Preset::CurrentPreset);
-			}
+			//if (ImGui::Combo("Profile", &Preset::CurrentPreset, (char*)Profile::profileListChar)) {
+			//	Preset::SetPreset(Preset::CurrentPreset);
+			//}
 			ImGui::SetCursorPos(ImVec2(125, 190));
 			ImGui::BeginTabBar("Recoil");
 			if (ImGui::BeginTabItem("Primary")) {
