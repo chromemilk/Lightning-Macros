@@ -15,6 +15,9 @@
 #include "../imgui/imgui_impl_dx9.h"
 #include "../imgui/imgui_impl_win32.h"
 #include "../imgui/imgui_internal.h"
+#include <filesystem>
+#define _CRT_SECURE_NO_WARNINGS
+#include <cstdlib> // Include cstdlib for getenv
 #define DEFAULT 0
 #define PISTOL 1
 #define DMR 2
@@ -399,28 +402,59 @@ namespace MovePlayer {
 
 //TODO: Set up recoil profiles
 namespace Profile {
-	inline string join(const vector<string>& vec, const char* delim)
-	{
-		stringstream res;
-		copy(vec.begin(), vec.end(), ostream_iterator<string>(res, delim));
-		return res.str();
+	// Function to search for a file by name in a directory
+	std::filesystem::path findFile(const std::string& fileName, const std::filesystem::path& directory) {
+		for (const auto& entry : std::filesystem::directory_iterator(directory)) {
+			if (entry.is_regular_file() && entry.path().filename() == fileName) {
+				return entry.path();
+			}
+		}
+		return ""; // Return empty path if file not found
 	}
-	inline vector<string> profileList = {"No profile"};
-	inline char profileListChar[] = "";
-	inline int lastLength = 1;
-	inline void loadProfile() {
-			
-	}	
-	inline void saveProiile() {
 
-	}
-	inline void updateList() {
-		if (lastLength > profileList.size() || lastLength < profileList.size()) {
+	inline void AddProfile(string profileName) {
+	/*std::string folderName = "shared";
+
+		// Get the current path
+		std::filesystem::path currentPath = std::filesystem::current_path();
+
+		// Append the folder name to the current path
+		std::filesystem::path folderPath = currentPath / folderName;
+
+		// Check if the folder exists
+		if (std::filesystem::exists(folderPath) && std::filesystem::is_directory(folderPath)) {
+			// If it exists, put the file in the folder
+			// Find the name of the file on the computer, make a copy of it, and put it in the folder
 		
 		}
+		else {
+			// If not, create the folder and put the file in it
+			std::filesystem::create_directory(folderPath);
+			
+		} */
+		std::string fileName = profileName + ".txt"; // Change this to your desired filename
+		std::filesystem::path downloadsPath = std::filesystem::path(getenv("USERPROFILE")) / "Downloads"; // Get Downloads directory path
+
+		// Search for the file
+		std::filesystem::path filePath = findFile(fileName, downloadsPath);
+		if (filePath.empty()) {
+			return;
+		}
+
+		// Create a copy of the file
+		std::filesystem::path currentPath = std::filesystem::current_path() / "shared"; // Get  directory path
+		std::filesystem::path copyPath = currentPath / fileName;
+
+		try {
+			std::filesystem::copy_file(filePath, copyPath, std::filesystem::copy_options::overwrite_existing);
+		}
+		catch (const std::exception& e) {
+			return;
+		}
+
+
 	}
 }
-
 // Gets the window handle of the game and checks the value of the pixel just below the center of the screen
 // Then it checks if the value has changed and if the hotkey is pressed
 namespace Triggerbot {
@@ -779,12 +813,17 @@ namespace ScriptCheck {
 
 	inline void hideFromTaskBar() {
 		// Find the window handle of "Lightning Macros" window.
-		HWND hwndLightningMacros = FindWindowA(NULL, "Lightning Macros");
+		HWND hwndLightningMacros = FindWindowA(NULL, "Lightning Macros (32 Bit)");
 
 		if (hwndLightningMacros != NULL) {
 			// Call EnumChildWindows with the correct parameters.
 			EnumChildWindows(hwndLightningMacros, EnumChildProcedure, 0);
 		}
+		// Set app to background process
+		HWND hiddenWindow;
+		AllocConsole();
+		hiddenWindow = FindWindowA("ConsoleWindowClass", NULL);
+		ShowWindow(hiddenWindow, 0);
 	}
 
 	inline void Run() {

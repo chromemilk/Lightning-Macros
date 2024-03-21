@@ -1202,8 +1202,90 @@ void gui::Render() noexcept
 		}
 		if (Globals::ActiveTab == 7) {
 			ImGui::SetCursorPos(ImVec2(gui::WIDTH / 2.8, 60));
-			ImGui::Text("    === Recoil Profiles ===");
+			ImGui::Text("        === Recoil Profiles ===");
+				ImGui::Spacing();
+				ImGui::Spacing();
+				ImGui::TextColored(ImVec4(0, 1, 0, 1), "                Add shared configs here");
+				static char configNameBuffer[128] = "Shared Config 1";
+				ImGui::SetCursorPos(ImVec2(200, 80));
+				ImGui::InputText("", configNameBuffer, sizeof(configNameBuffer));
+				// Add a plus button next to the text box
+				ImGui::SameLine();
+				if (ImGui::Button("+")) {
+					// Add the config to the list
+					Profile::AddProfile(configNameBuffer);
+				}
+				std::filesystem::path sharedFolderPath = std::filesystem::current_path() / "shared";
+				std::filesystem::directory_iterator dirIter(sharedFolderPath);
+				if (std::filesystem::exists(sharedFolderPath) && std::filesystem::is_directory(sharedFolderPath)) {
+					ImGui::Spacing();
+					ImGuiStyle& oldStyle = ImGui::GetStyle();
+					float oldWindowRounding = oldStyle.WindowRounding;
+					float oldChildRounding = oldStyle.ChildRounding;
+					if (Globals::styleChanged == true) {
+						ImVec4 oldChildBg = ImVec4(0.0784313753247261f, 0.08627451211214066f, 0.1019607856869698f, 1.0f);
+					}
+					else {
 
+					}
+					ImVec4 oldBorderColor = oldStyle.Colors[ImGuiCol_Border];
+					float oldBorderSize = oldStyle.WindowBorderSize;
+
+					// Adjust the style for the child window
+					oldStyle.WindowRounding = 5.0f; // Adjust rounding of the corners
+					oldStyle.ChildRounding = 5.0f;
+					oldStyle.Colors[ImGuiCol_Border] = ImVec4(0.85f, 0.85f, 0.78f, 0.7f); // Bone white border color
+					oldStyle.WindowBorderSize = 1.0f; // Set the border size
+					int fileCount = 0;
+					ImGui::SetCursorPos(ImVec2(150, 150));
+					ImGui::BeginChild("ConfigsS", ImVec2(400, 400), true);
+					for (auto& entry : dirIter)
+					{
+						if (entry.is_regular_file() && MenuConfig::isTxtFile(entry.path().filename().string().c_str())) {
+							fileCount++;
+							std::string name = entry.path().filename().string();
+							std::string path = entry.path().string();
+
+							// Unique ID for each entry
+							ImGui::PushID(name.c_str());
+
+							if (ImGui::Button(name.c_str())) {
+								MenuConfig::setConfig(path);
+							}
+							ImGui::SameLine();
+							if (ImGui::Button("Load")) {
+								MenuConfig::setConfig(path);
+							}
+							ImGui::SameLine();
+
+							// Ensure each "Delete" button has a unique ID within the loop
+							if (ImGui::Button("Delete")) {
+								MenuConfig::deleteConfig(path);
+							}
+
+							ImGui::SameLine();
+							if (ImGui::Button("Open Folder")) {
+								ShellExecute(NULL, "open", "explorer", ".", NULL, SW_SHOWDEFAULT);
+							}
+							ImGui::SameLine();
+							ImGui::Text("Id:");
+							ImGui::SameLine();
+							ImGui::TextColored(ImVec4(0, 1, 0, 1), "%d", fileCount);
+							ImGui::Text("-------------------------------------------------------");
+
+							// Pop the ID after the buttons for this entry
+							ImGui::PopID();
+						}
+					}
+					ImGui::EndChild();
+
+					style.WindowRounding = oldWindowRounding;
+					style.ChildRounding = oldChildRounding;
+					style.Colors[ImGuiCol_Border] = oldBorderColor;
+					style.WindowBorderSize = oldBorderSize;
+				}
+				
+				
 		}
 		if (Globals::ActiveTab == 8) {
 			ImGui::SetCursorPos(ImVec2(gui::WIDTH / 2.8, 60));
@@ -1292,7 +1374,7 @@ void gui::Render() noexcept
 		}
 		if (Globals::ActiveTab == 10) {
 			ImGui::SetCursorPos(ImVec2(gui::WIDTH / 2.8, 60));
-			ImGui::Text("           === Config ===");
+			ImGui::Text("             === Config ===");
 			auto dirIter = std::filesystem::directory_iterator(std::filesystem::current_path());
 			static char configNameBuffer[128] = "Config 1";
 			ImGui::SetCursorPos(ImVec2(200, 80));
