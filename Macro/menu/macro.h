@@ -581,6 +581,13 @@ inline float accentColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 inline ImVec4 accentColorImVec4 = ImVec4(accentColor[0], accentColor[1], accentColor[2], accentColor[3]);
 }
 
+namespace PhysicalAttributes {
+	inline bool custom_attributes = false;
+	inline float rounding_slider = 0.0f;
+	inline float rounding_frame = 0.0f;
+	inline float rounding_tab = 0.0f;
+}
+
 namespace MenuConfig {
 	// Filters out non-txt files
 	inline bool isTxtFile(const std::string& fileName) {
@@ -662,6 +669,11 @@ namespace MenuConfig {
 					//else if (key == "Aimbot::usesHumanAnatomy") Aimbot::usesHumanAnatomy = value == "1";
 					else if (key == "Globals::hasMaxTime") Globals::hasMaxTime = value == "1";
 					else if (key == "Globals::maxTime") Globals::maxTime = std::stoi(value);
+					// *** Physical Attributes ***
+					else if (key == "PhysicalAttributes::custom_attributes") PhysicalAttributes::custom_attributes = value == "1";
+					else if (key == "PhysicalAttributes::rounding_slider") PhysicalAttributes::rounding_slider = std::stof(value);
+					else if (key == "PhysicalAttributes::rounding_frame") PhysicalAttributes::rounding_frame = std::stof(value);
+					else if (key == "PhysicalAttributes::rounding_tab") PhysicalAttributes::rounding_tab = std::stof(value);
 					else if (key == "Colors::customColors") Colors::customColors = value == "1";
 					else if (key == "Colors::includeText") Colors::includeText = value == "1";
 					else if (key == "Colors::accentColor") {
@@ -754,6 +766,12 @@ namespace MenuConfig {
 		configFile << "Colors::customColors=" << Colors::customColors << '\n';
 		configFile << "Colors::includeText=" << Colors::includeText << '\n';
 		configFile << "Colors::accentColor=" << Colors::accentColor[0] << " " << Colors::accentColor[1] << " " << Colors::accentColor[2] << " " << Colors::accentColor[3] << '\n';
+		// *** Physical Attributes ***
+		configFile << "PhysicalAttributes::custom_attributes=" << PhysicalAttributes::custom_attributes << '\n';
+		configFile << "PhysicalAttributes::rounding_slider=" << PhysicalAttributes::rounding_slider << '\n';
+		configFile << "PhysicalAttributes::rounding_frame=" << PhysicalAttributes::rounding_frame << '\n';
+		configFile << "PhysicalAttributes::rounding_tab=" << PhysicalAttributes::rounding_tab << '\n';
+
 
 		// Close the file
 		configFile.close();

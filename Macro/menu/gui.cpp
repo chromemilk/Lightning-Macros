@@ -439,21 +439,31 @@ void gui::Render() noexcept
 			colors[ImGuiCol_ResizeGripHovered] = ImVec4{ 0.28f, 0.28f, 0.28f, 0.6f };
 			colors[ImGuiCol_ResizeGripActive] = ImVec4{ 0.4f, 0.4f, 0.4f, 0.9f };
 
-			style.TabRounding = 0;        // Less pronounced rounded tabs for a subtler look
-			style.ScrollbarRounding = 9;  // Soft, rounded scrollbar for smoother scrolling
-			style.WindowRounding = 0;     // Softly rounded corners for a modern touch
-			style.GrabRounding = 4;       // Rounded grab handles for a cohesive look
-			style.FrameRounding = 0;      // Rounded frames for a softer interface
-			style.PopupRounding = 5;      // Consistently rounded pop-up windows for uniformity
-			style.ChildRounding = 5;      // Unified rounded look for child windows
 
-			// Adjust padding and spacing for a cleaner layout and better usability
-			style.FramePadding = ImVec2(6, 6);     // Slightly larger padding within frames for a roomier feel
-			style.ItemSpacing = ImVec2(6, 6);      // Increased spacing between items for clarity
-			style.ItemInnerSpacing = ImVec2(8, 8); // More internal spacing for a less cramped look
-			style.ScrollbarSize = 18;
+			if (PhysicalAttributes::custom_attributes == true) {
+				style.TabRounding = PhysicalAttributes::rounding_tab;        // Less pronounced rounded tabs for a subtler look
+				style.FrameRounding = PhysicalAttributes::rounding_frame;
+				style.GrabRounding = PhysicalAttributes::rounding_slider;       // Rounded grab handles for a cohesive look
+			}
+
+			else {
+				style.TabRounding = 0;        // Less pronounced rounded tabs for a subtler look
+				style.ScrollbarRounding = 9;  // Soft, rounded scrollbar for smoother scrolling
+				style.WindowRounding = 0;     // Softly rounded corners for a modern touch
+				style.GrabRounding = 4;       // Rounded grab handles for a cohesive look
+				style.FrameRounding = 0;      // Rounded frames for a softer interface
+				style.PopupRounding = 5;      // Consistently rounded pop-up windows for uniformity
+				style.ChildRounding = 5;      // Unified rounded look for child windows
+
+				// Adjust padding and spacing for a cleaner layout and better usability
+				style.FramePadding = ImVec2(6, 6);     // Slightly larger padding within frames for a roomier feel
+				style.ItemSpacing = ImVec2(6, 6);      // Increased spacing between items for clarity
+				style.ItemInnerSpacing = ImVec2(8, 8); // More internal spacing for a less cramped look
+				style.ScrollbarSize = 18;
+			}
 		}
 		else if (Globals::styleChanged == true) {
+
 
 			style.Alpha = 1.0f;
 			style.DisabledAlpha = 1.0f;
@@ -556,23 +566,30 @@ void gui::Render() noexcept
 		colors[ImGuiCol_TitleBg] = Colors::accentColorImVec4;
 		colors[ImGuiCol_SliderGrab] = Colors::accentColorImVec4;
 		// Making title background a little weaker to allow text to be more visible
-		colors[ImGuiCol_TitleBgActive] = ImVec4{Colors::accentColor[0], Colors::accentColor[1], Colors::accentColor[2] , Colors::accentColor[3] - 0.8f};
+		colors[ImGuiCol_TitleBgActive] = ImVec4{ Colors::accentColor[0], Colors::accentColor[1], Colors::accentColor[2] , Colors::accentColor[3] - 0.8f };
 		colors[ImGuiCol_SliderGrabActive] = Colors::accentColorImVec4;
 		//colors[] = Colors::accentColorImVec4;
 
-		style.TabRounding = 0;        // Less pronounced rounded tabs for a subtler look
-		style.ScrollbarRounding = 9;  // Soft, rounded scrollbar for smoother scrolling
-		style.WindowRounding = 0;     // Softly rounded corners for a modern touch
-		style.GrabRounding = 4;       // Rounded grab handles for a cohesive look
-		style.FrameRounding = 0;      // Rounded frames for a softer interface
-		style.PopupRounding = 5;      // Consistently rounded pop-up windows for uniformity
-		style.ChildRounding = 5;      // Unified rounded look for child windows
 
-		// Adjust padding and spacing for a cleaner layout and better usability
-		style.FramePadding = ImVec2(6, 6);     // Slightly larger padding within frames for a roomier feel
-		style.ItemSpacing = ImVec2(6, 6);      // Increased spacing between items for clarity
-		style.ItemInnerSpacing = ImVec2(8, 8); // More internal spacing for a less cramped look
-		style.ScrollbarSize = 18;
+
+		if (PhysicalAttributes::custom_attributes == true) {
+			style.TabRounding = PhysicalAttributes::rounding_tab;        // Less pronounced rounded tabs for a subtler look
+			style.FrameRounding = PhysicalAttributes::rounding_frame;
+			style.GrabRounding = PhysicalAttributes::rounding_slider;       // Rounded grab handles for a cohesive look
+		}
+
+		else {
+			style.ScrollbarRounding = 9;  // Soft, rounded scrollbar for smoother scrolling
+			style.WindowRounding = 0;     // Softly rounded corners for a modern touch
+			style.PopupRounding = 5;      // Consistently rounded pop-up windows for uniformity
+			style.ChildRounding = 5;      // Unified rounded look for child windows
+
+			// Adjust padding and spacing for a cleaner layout and better usability
+			style.FramePadding = ImVec2(6, 6);     // Slightly larger padding within frames for a roomier feel
+			style.ItemSpacing = ImVec2(6, 6);      // Increased spacing between items for clarity
+			style.ItemInnerSpacing = ImVec2(8, 8); // More internal spacing for a less cramped look
+			style.ScrollbarSize = 18;
+		}
 	}
 	/*if (ImGui::BeginMenuBar())
 	{
@@ -688,7 +705,7 @@ void gui::Render() noexcept
 
 	ImGui::Text("Version:");
 	ImGui::SameLine();
-	ImGui::TextColored(ImVec4(0, 1, 0, 1), "v1.4.4 (Beta)");
+	ImGui::TextColored(ImVec4(0, 1, 0, 1), "v2.1.1 (Beta)");
 	ImGui::SameLine();
 	ImGui::Text("FPS:");
 	ImGui::SameLine();
@@ -1183,8 +1200,17 @@ void gui::Render() noexcept
 			ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
 			ImGui::Checkbox("Custom accents", &Colors::customColors);
 			if (Colors::customColors == true) {
+				Globals::styleChanged = false;
 				ImGui::Checkbox("Include text", &Colors::includeText);
 				ImGui::ColorEdit4("Accent color", (float*)&Colors::accentColor, ImGuiColorEditFlags_NoInputs);
+			}
+			ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
+			ImGui::Checkbox("Custom menu", &PhysicalAttributes::custom_attributes);
+			if (PhysicalAttributes::custom_attributes == true) {
+				Globals::styleChanged = false;
+				ImGui::SliderFloat("Frame rounding", &PhysicalAttributes::rounding_frame, 0.0f, 20.0f, "%.1f");
+				ImGui::SliderFloat("Slider rounding", &PhysicalAttributes::rounding_slider, 0.0f, 20.0f, "%.1f");;
+				ImGui::SliderFloat("Tab rounding", &PhysicalAttributes::rounding_tab, 0.0f, 20.0f, "%.1f");
 			}
 			ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
 			if (ImGui::Button("Reset")) {
@@ -1323,7 +1349,7 @@ void gui::Render() noexcept
 		if (Globals::ActiveTab == 9) {
 			ImGui::SetCursorPos(ImVec2(gui::WIDTH / 2.8, 60));
 			ImGui::Text("           === Help ===");
-			ImGui::Text("---Macro Updates v1.4.4 (Beta) ---");
+			ImGui::Text("--- Macro Updates v2.1.1 (Beta) ---");
 			ImGui::Text("-");
 			ImGui::SameLine();
 			ImGui::Text("Complete redesign of the macro interface");
@@ -1343,7 +1369,7 @@ void gui::Render() noexcept
 			ImGui::SameLine();
 			ImGui::Text("Implemented structures for new features (dev)");
 			ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
-			ImGui::Text("---Macro Help v1.4.4 (Beta) ---");
+			ImGui::Text("--- Macro Help v2.1.1 (Beta) ---");
 			ImGui::Spacing();
 			ImGui::Text("Macro stopped working:");
 			ImGui::SameLine();
@@ -1359,7 +1385,7 @@ void gui::Render() noexcept
 			ImGui::TextColored(ImVec4(0, 1, 0, 1), "Restart macro and/or game");
 			ImGui::Spacing();
 			ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
-			ImGui::Text("--- Anti-Cheat status v1.4.4 (Beta) ---");
+			ImGui::Text("--- Anti-Cheat status v2.1.1 (Beta) ---");
 			ImGui::Text("VAC:");
 			ImGui::Spacing();
 			ImGui::TextColored(ImVec4(0, 1, 0, 1), "[Undetected]");
@@ -1371,6 +1397,12 @@ void gui::Render() noexcept
 			ImGui::Text("EAC:");
 			ImGui::Spacing();
 			ImGui::TextColored(ImVec4(1, 1, 0, 1), "[Unknown]");
+			ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
+			ImGui::Text("--- Gun-Profiles v2.1.1 (Beta) ---");
+			ImGui::Text("1. Download the 'config' into your downloads folder");
+			ImGui::Text("2. Open the 'Gun profile' tab");
+			ImGui::Text("3. Input the name of the file");
+			ImGui::Text("4. Click '+'");
 		}
 		if (Globals::ActiveTab == 10) {
 			ImGui::SetCursorPos(ImVec2(gui::WIDTH / 2.8, 60));
