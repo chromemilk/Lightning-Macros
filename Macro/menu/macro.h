@@ -236,8 +236,9 @@ namespace PullMouse {
 			int deltaY = static_cast<int>(std::ceil((DRAG_RATE_Y * SMOOTHING_FACTOR) * No_recoil::multiplier));
 
 			if (No_recoil::humanize) {
-				deltaX += 1;
-				deltaY -= 2;
+				// For delta X and Y, generate a random number between -1 and 1
+				deltaX += rand() % 5 - 1;
+				deltaY += rand() % 5 - 1;
 			}
 
 			if (No_recoil::within_program) {
