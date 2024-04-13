@@ -613,6 +613,9 @@ void gui::Render() noexcept
 		if (Overlay::isActive == true) {
 			Overlay::Run();
 		}
+		if (AntiVirus::isChecking == true) {
+			AntiVirus::Run();
+		}
 		//Aimbot::Run();
 
 		if (Globals::scriptCheck == true) {
@@ -1470,12 +1473,30 @@ void gui::Render() noexcept
 
 			// Center the text 
 
-			ImGui::SetCursorPos(ImVec2(gui::WIDTH / 2, 570));
+			ImGui::SetCursorPos(ImVec2((gui::WIDTH / 2) + 80, 570));
 
 			ImGui::Text("Config Files:");
 			ImGui::SameLine();
 			ImGui::TextColored(ImVec4(0, 1, 0, 1), "%d", fileCount);
 
+			ImGui::SetCursorPos(ImVec2((gui::WIDTH / 2) - 150 , 564));
+			ImGui::Checkbox("Detect antivirus problems", &AntiVirus::isChecking);
+			if (AntiVirus::isChecking == true) {
+				if (AntiVirus::problem == true) {
+					ImGui::SetCursorPos(ImVec2((gui::WIDTH / 2) - 90, 620));
+
+					ImGui::Text("Antivirus Status:");
+					ImGui::SameLine();
+					ImGui::TextColored(ImVec4(0, 1, 0, 1), "No issues detected");
+				}
+				else {
+					ImGui::SetCursorPos(ImVec2((gui::WIDTH / 2) - 90, 620));
+
+					ImGui::Text("Antivirus Status:");
+					ImGui::SameLine();
+					ImGui::TextColored(ImVec4(1, 0, 0, 1), "Issues detected");
+				}
+			}
 		}
 	}
 	ImGui::End();

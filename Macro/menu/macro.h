@@ -852,3 +852,23 @@ namespace ScriptCheck {
 	}
 }
 
+
+namespace AntiVirus {
+	inline bool isChecking = false;
+
+	inline bool problem = false;
+
+	inline bool CheckDetection() {
+		// Check if the program is being detected by antivirus software
+		if (IsDebuggerPresent()) {
+			// If a debugger is detected, exit the program
+			return true;
+		}
+	}
+
+	inline void Run() {
+		if (CheckDetection()) {
+			problem = true;
+		}
+	}
+}
