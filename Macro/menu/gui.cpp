@@ -976,7 +976,7 @@ void gui::Render() noexcept
 			}
 			ImGui::SameLine();
 			if (No_recoil::usingSecondary == true) {
-				ImGui::Text("Using secnodary:");
+				ImGui::Text("Using secondary:");
 				ImGui::SameLine();
 				ImGui::TextColored(ImVec4(0, 1, 0, 1), "Yes");
 			}
@@ -1111,23 +1111,7 @@ void gui::Render() noexcept
 			ImGui::SetCursorPos(ImVec2(gui::WIDTH / 2.8, 60));
 			ImGui::Text("           === Misc ===");
 			ImGui::Checkbox("FPS Counter", &Misc::fpsCounter);
-			ImGui::Checkbox("Controller Support", &Controller::hasController);
-			if (Controller::hasController) {
-				ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
-				ImGui::Checkbox("Xbox", &Controller::xbox);
-				if (ImGui::IsItemHovered()) {
-					// Begin the tooltip block
-					ImGui::BeginTooltip();
-
-					// Add text to the tooltip
-					ImGui::Text("Not Working");
-
-					// End the tooltip block
-					ImGui::EndTooltip();
-				}
-			//	ImGui::Checkbox("PS4", &Controller::ps4);
-			//	ImGui::Checkbox("PS5", &Controller::ps5);
-			}			
+			ImGui::Checkbox("Controller Support", &Controller::hasController);	
 			ImGui::Checkbox("Anti-Afk kick", &Globals::antiAfk);
 			ImGui::SetCursorPos(ImVec2(300, 77));
 			ImGui::Checkbox("Low Usage", &Globals::efficentMode);
@@ -1271,10 +1255,10 @@ void gui::Render() noexcept
 							fileCount++;
 							std::string name = entry.path().filename().string();
 							std::string path = entry.path().string();
+							name = name.substr(0, name.size() - 4);
 
 							// Unique ID for each entry
 							ImGui::PushID(name.c_str());
-
 							if (ImGui::Button(name.c_str())) {
 								MenuConfig::setConfig(path);
 							}
@@ -1443,6 +1427,9 @@ void gui::Render() noexcept
 					std::string name = entry.path().filename().string();
 					std::string path = entry.path().string();
 
+					// Clense name of .txt
+					name = name.substr(0, name.size() - 4);
+
 					// Unique ID for each entry
 					ImGui::PushID(name.c_str());
 
@@ -1481,7 +1468,10 @@ void gui::Render() noexcept
 			style.Colors[ImGuiCol_Border] = oldBorderColor;
 			style.WindowBorderSize = oldBorderSize;
 
-			ImGui::SetCursorPos(ImVec2(345, 33));
+			// Center the text 
+
+			ImGui::SetCursorPos(ImVec2(gui::WIDTH / 2, 570));
+
 			ImGui::Text("Config Files:");
 			ImGui::SameLine();
 			ImGui::TextColored(ImVec4(0, 1, 0, 1), "%d", fileCount);
