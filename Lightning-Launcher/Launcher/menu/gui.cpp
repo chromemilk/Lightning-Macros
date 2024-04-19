@@ -254,6 +254,23 @@ void gui::EndRender() noexcept
 		ResetDevice();
 }
 
+bool programRunning(std::string pName) {
+	PROCESSENTRY32 entry;
+	entry.dwSize = sizeof(PROCESSENTRY32);
+	auto snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, NULL);
+
+	if (Process32First(snapshot, &entry) == TRUE) {
+		while (Process32Next(snapshot, &entry) == TRUE) {
+			if (std::string(entry.szExeFile) == pName) {
+				CloseHandle(snapshot);
+				return true;
+			}
+		}
+	}
+	CloseHandle(snapshot);
+	return false;
+}
+
 
 
 
@@ -266,102 +283,116 @@ void gui::Render() noexcept
 		"Lightning Launcher",
 		&isRunning
 	);
+
+
+
+	auto& colors = ImGui::GetStyle().Colors;
+
+	// Main background
+	colors[ImGuiCol_WindowBg] = ImVec4{ 0.05f, 0.05f, 0.05f, 1.00f }; // Near-black for the main background
+
+	// Menu Bar
+	colors[ImGuiCol_MenuBarBg] = ImVec4{ 0.10f, 0.10f, 0.20f, 1.00f }; // Dark blue for menu bar
+
+	// Borders
+	colors[ImGuiCol_Border] = ImVec4{ 0.20f, 0.20f, 0.25f, 1.00f }; // Dark blue tint for borders
+	colors[ImGuiCol_BorderShadow] = ImVec4{ 0.00f, 0.00f, 0.00f, 0.00f }; // Clear shadow for a cleaner look
+
+	// Text
+	colors[ImGuiCol_Text] = ImVec4{ 0.90f, 0.90f, 0.90f, 1.00f };
+	colors[ImGuiCol_TextDisabled] = ImVec4{ 0.60f, 0.60f, 0.60f, 1.00f };
+
+	// Headers
+	colors[ImGuiCol_Header] = ImVec4{ 0.15f, 0.15f, 0.25f, 1.00f }; // Dark blue for headers
+	colors[ImGuiCol_HeaderHovered] = ImVec4{ 0.20f, 0.20f, 0.30f, 1.00f }; // Slightly lighter blue when hovered
+	colors[ImGuiCol_HeaderActive] = ImVec4{ 0.25f, 0.25f, 0.35f, 1.00f }; // Even lighter blue when active
+
+	// Buttons
+	colors[ImGuiCol_Button] = ImVec4{ 0.15f, 0.15f, 0.25f, 1.00f }; // Dark blue for buttons
+	colors[ImGuiCol_ButtonHovered] = ImVec4{ 0.20f, 0.20f, 0.30f, 1.00f };
+	colors[ImGuiCol_ButtonActive] = ImVec4{ 0.25f, 0.25f, 0.35f, 1.00f };
+
+	// CheckMark
+	colors[ImGuiCol_CheckMark] = ImVec4{ 0.90f, 0.90f, 0.00f, 1.00f }; // Yellow for visibility
+
+	// Popups
+	colors[ImGuiCol_PopupBg] = ImVec4{ 0.08f, 0.08f, 0.10f, 0.92f }; // Darker blue for popups
+
+	// Slider
+	colors[ImGuiCol_SliderGrab] = ImVec4{ 0.20f, 0.20f, 0.25f, 1.00f }; // Dark blue for slider grab
+	colors[ImGuiCol_SliderGrabActive] = ImVec4{ 0.25f, 0.25f, 0.35f, 1.00f }; // Lighter blue for active slider grab
+
+	// Frame BG
+	colors[ImGuiCol_FrameBg] = ImVec4{ 0.10f, 0.10f, 0.15f, 1.00f }; // Dark blue for frame background
+	colors[ImGuiCol_FrameBgHovered] = ImVec4{ 0.15f, 0.15f, 0.20f, 1.00f };
+	colors[ImGuiCol_FrameBgActive] = ImVec4{ 0.20f, 0.20f, 0.25f, 1.00f };
+
+	// Tabs
+	colors[ImGuiCol_Tab] = ImVec4{ 0.10f, 0.10f, 0.15f, 1.00f };
+	colors[ImGuiCol_TabHovered] = ImVec4{ 0.25f, 0.25f, 0.30f, 1.00f };
+	colors[ImGuiCol_TabActive] = ImVec4{ 0.15f, 0.15f, 0.20f, 1.00f };
+	colors[ImGuiCol_TabUnfocused] = ImVec4{ 0.10f, 0.10f, 0.15f, 1.00f };
+	colors[ImGuiCol_TabUnfocusedActive] = ImVec4{ 0.15f, 0.15f, 0.20f, 1.00f };
+
+	// Title
+	colors[ImGuiCol_TitleBg] = ImVec4{ 0.08f, 0.08f, 0.10f, 1.0f }; // Dark blue for title background
+	colors[ImGuiCol_TitleBgActive] = ImVec4{ 0.10f, 0.10f, 0.12f, 1.0f }; // Slightly lighter blue for active title
+	colors[ImGuiCol_TitleBgCollapsed] = ImVec4{ 0.08f, 0.08f, 0.10f, 1.0f }; // Same as title background for collapsed title
+
+	// Scrollbar
+	colors[ImGuiCol_ScrollbarBg] = ImVec4{ 0.02f, 0.02f, 0.03f, 1.0f }; // Very dark blue for scrollbar background
+	colors[ImGuiCol_ScrollbarGrab] = ImVec4{ 0.10f, 0.10f, 0.15f, 1.0f }; // Dark blue for scrollbar grab
+	colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4{ 0.12f, 0.12f, 0.17f, 1.0f }; // Slightly lighter blue for hovered scrollbar grab
+	colors[ImGuiCol_ScrollbarGrabActive] = ImVec4{ 0.15f, 0.15f, 0.20f, 1.0f }; // Even lighter blue for active scrollbar grab
+
+	// Separator
+	colors[ImGuiCol_Separator] = ImVec4{ 0.10f, 0.10f, 0.15f, 1.0f }; // Dark blue for separator
+	colors[ImGuiCol_SeparatorHovered] = ImVec4{ 0.12f, 0.12f, 0.17f, 1.0f };
+	colors[ImGuiCol_SeparatorActive] = ImVec4{ 0.90f, 0.90f, 0.00f, 1.0f }; // Yellow for active separator
+
+	// Resize Grip
+	colors[ImGuiCol_ResizeGrip] = ImVec4{ 0.10f, 0.10f, 0.15f, 0.25f }; // Semi-transparent dark blue for resize grip
+	colors[ImGuiCol_ResizeGripHovered] = ImVec4{ 0.12f, 0.12f, 0.17f, 0.67f };
+	colors[ImGuiCol_ResizeGripActive] = ImVec4{ 0.90f, 0.90f, 0.00f, 1.0f }; // Yellow for active resize grip
+
+
+	auto& style = ImGui::GetStyle();
+
+	// Increase the rounding for a more bubbly look
+	style.TabRounding = 8;        // More rounded tabs
+	style.ScrollbarRounding = 12; // Very rounded scrollbar
+	style.WindowRounding = 6;     // Gently rounded corners for the windows
+	style.GrabRounding = 6;       // Rounded grab handles on sliders
+	style.FrameRounding = 6;      // Rounded frames
+	style.PopupRounding = 6;      // Rounded pop-up windows
+	style.ChildRounding = 6;      // Rounded child windows
+
+	// You might also want to increase padding and spacing to enhance the bubbly effect
+	style.FramePadding = ImVec2(10, 10);       // Padding within the frames
+	style.ItemSpacing = ImVec2(1, 6);        // Spacing between items/widgets
+	style.ItemInnerSpacing = ImVec2(1, 1);   // Spacing within a complex item (e.g., within a combo box)
+	style.ScrollbarSize = 10;
 	
 
-
-		auto& colors = ImGui::GetStyle().Colors;
-
-		// Main background
-		colors[ImGuiCol_WindowBg] = ImVec4{ 0.05f, 0.05f, 0.05f, 1.00f }; // Near-black for the main background
-
-		// Menu Bar
-		colors[ImGuiCol_MenuBarBg] = ImVec4{ 0.10f, 0.10f, 0.20f, 1.00f }; // Dark blue for menu bar
-
-		// Borders
-		colors[ImGuiCol_Border] = ImVec4{ 0.20f, 0.20f, 0.25f, 1.00f }; // Dark blue tint for borders
-		colors[ImGuiCol_BorderShadow] = ImVec4{ 0.00f, 0.00f, 0.00f, 0.00f }; // Clear shadow for a cleaner look
-
-		// Text
-		colors[ImGuiCol_Text] = ImVec4{ 0.90f, 0.90f, 0.90f, 1.00f };
-		colors[ImGuiCol_TextDisabled] = ImVec4{ 0.60f, 0.60f, 0.60f, 1.00f };
-
-		// Headers
-		colors[ImGuiCol_Header] = ImVec4{ 0.15f, 0.15f, 0.25f, 1.00f }; // Dark blue for headers
-		colors[ImGuiCol_HeaderHovered] = ImVec4{ 0.20f, 0.20f, 0.30f, 1.00f }; // Slightly lighter blue when hovered
-		colors[ImGuiCol_HeaderActive] = ImVec4{ 0.25f, 0.25f, 0.35f, 1.00f }; // Even lighter blue when active
-
-		// Buttons
-		colors[ImGuiCol_Button] = ImVec4{ 0.15f, 0.15f, 0.25f, 1.00f }; // Dark blue for buttons
-		colors[ImGuiCol_ButtonHovered] = ImVec4{ 0.20f, 0.20f, 0.30f, 1.00f };
-		colors[ImGuiCol_ButtonActive] = ImVec4{ 0.25f, 0.25f, 0.35f, 1.00f };
-
-		// CheckMark
-		colors[ImGuiCol_CheckMark] = ImVec4{ 0.90f, 0.90f, 0.00f, 1.00f }; // Yellow for visibility
-
-		// Popups
-		colors[ImGuiCol_PopupBg] = ImVec4{ 0.08f, 0.08f, 0.10f, 0.92f }; // Darker blue for popups
-
-		// Slider
-		colors[ImGuiCol_SliderGrab] = ImVec4{ 0.20f, 0.20f, 0.25f, 1.00f }; // Dark blue for slider grab
-		colors[ImGuiCol_SliderGrabActive] = ImVec4{ 0.25f, 0.25f, 0.35f, 1.00f }; // Lighter blue for active slider grab
-
-		// Frame BG
-		colors[ImGuiCol_FrameBg] = ImVec4{ 0.10f, 0.10f, 0.15f, 1.00f }; // Dark blue for frame background
-		colors[ImGuiCol_FrameBgHovered] = ImVec4{ 0.15f, 0.15f, 0.20f, 1.00f };
-		colors[ImGuiCol_FrameBgActive] = ImVec4{ 0.20f, 0.20f, 0.25f, 1.00f };
-
-		// Tabs
-		colors[ImGuiCol_Tab] = ImVec4{ 0.10f, 0.10f, 0.15f, 1.00f };
-		colors[ImGuiCol_TabHovered] = ImVec4{ 0.25f, 0.25f, 0.30f, 1.00f };
-		colors[ImGuiCol_TabActive] = ImVec4{ 0.15f, 0.15f, 0.20f, 1.00f };
-		colors[ImGuiCol_TabUnfocused] = ImVec4{ 0.10f, 0.10f, 0.15f, 1.00f };
-		colors[ImGuiCol_TabUnfocusedActive] = ImVec4{ 0.15f, 0.15f, 0.20f, 1.00f };
-
-		// Title
-		colors[ImGuiCol_TitleBg] = ImVec4{ 0.08f, 0.08f, 0.10f, 1.0f }; // Dark blue for title background
-		colors[ImGuiCol_TitleBgActive] = ImVec4{ 0.10f, 0.10f, 0.12f, 1.0f }; // Slightly lighter blue for active title
-		colors[ImGuiCol_TitleBgCollapsed] = ImVec4{ 0.08f, 0.08f, 0.10f, 1.0f }; // Same as title background for collapsed title
-
-		// Scrollbar
-		colors[ImGuiCol_ScrollbarBg] = ImVec4{ 0.02f, 0.02f, 0.03f, 1.0f }; // Very dark blue for scrollbar background
-		colors[ImGuiCol_ScrollbarGrab] = ImVec4{ 0.10f, 0.10f, 0.15f, 1.0f }; // Dark blue for scrollbar grab
-		colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4{ 0.12f, 0.12f, 0.17f, 1.0f }; // Slightly lighter blue for hovered scrollbar grab
-		colors[ImGuiCol_ScrollbarGrabActive] = ImVec4{ 0.15f, 0.15f, 0.20f, 1.0f }; // Even lighter blue for active scrollbar grab
-
-		// Separator
-		colors[ImGuiCol_Separator] = ImVec4{ 0.10f, 0.10f, 0.15f, 1.0f }; // Dark blue for separator
-		colors[ImGuiCol_SeparatorHovered] = ImVec4{ 0.12f, 0.12f, 0.17f, 1.0f };
-		colors[ImGuiCol_SeparatorActive] = ImVec4{ 0.90f, 0.90f, 0.00f, 1.0f }; // Yellow for active separator
-
-		// Resize Grip
-		colors[ImGuiCol_ResizeGrip] = ImVec4{ 0.10f, 0.10f, 0.15f, 0.25f }; // Semi-transparent dark blue for resize grip
-		colors[ImGuiCol_ResizeGripHovered] = ImVec4{ 0.12f, 0.12f, 0.17f, 0.67f };
-		colors[ImGuiCol_ResizeGripActive] = ImVec4{ 0.90f, 0.90f, 0.00f, 1.0f }; // Yellow for active resize grip
+	ImGui::Text("Version:");
+	ImGui::SameLine();
+	ImGui::TextColored(ImVec4(0, 1, 0, 1), "v1.2.2");
 
 
-		auto& style = ImGui::GetStyle();
+	static bool isChecking = false;
+	static bool attemptedToLoadMacro = false;
 
-		// Increase the rounding for a more bubbly look
-		style.TabRounding = 8;        // More rounded tabs
-		style.ScrollbarRounding = 12; // Very rounded scrollbar
-		style.WindowRounding = 6;     // Gently rounded corners for the windows
-		style.GrabRounding = 6;       // Rounded grab handles on sliders
-		style.FrameRounding = 6;      // Rounded frames
-		style.PopupRounding = 6;      // Rounded pop-up windows
-		style.ChildRounding = 6;      // Rounded child windows
+	// Create a combo box with avaliable programs
+	static const char* items[] = { "Valorant", "Apex Legends", "CS:GO", "Rainbow Six Siege", "Warzone", "Rust" };
+	static int item_current = 0;
+	
 
-		// You might also want to increase padding and spacing to enhance the bubbly effect
-		style.FramePadding = ImVec2(15, 15);       // Padding within the frames
-		style.ItemSpacing = ImVec2(6, 6);        // Spacing between items/widgets
-		style.ItemInnerSpacing = ImVec2(6, 6);   // Spacing within a complex item (e.g., within a combo box)
-		style.ScrollbarSize = 20;
+		ImGui::SetNextItemWidth(170);
 
-		ImGui::Text("Version:");
-		ImGui::SameLine();
-		ImGui::TextColored(ImVec4(0, 1, 0, 1), "v1.0.1");
+		if (ImGui::Combo("##combo", &item_current, items, IM_ARRAYSIZE(items))) {
 
+		}
 
-		static bool isChecking = false;
 
 		if (isChecking == true) {
 			std::ifstream file(".\\ExternalCrossHairOverlay.exe");
@@ -384,8 +415,8 @@ void gui::Render() noexcept
 
 
 
-		ImGui::SetCursorPos(ImVec2((gui::WIDTH / 2) - 70, gui::HEIGHT - 250));
-		if (ImGui::Button("Standalone Crosshair")) {
+		ImGui::SetCursorPos(ImVec2((gui::WIDTH / 2) - 30, gui::HEIGHT - 250));
+		if (ImGui::Button("Crosshair")) {
 			const char* programPath = ".\\ExternalCrossHairOverlay.exe";
 			ShellExecuteA(nullptr, "open", programPath, nullptr, nullptr, SW_SHOWNORMAL) <= (HINSTANCE)32;
 		}
@@ -405,6 +436,100 @@ void gui::Render() noexcept
 			const char* programPath = ".\\uninstaller.exe";
 			ShellExecuteA(nullptr, "open", programPath, nullptr, nullptr, SW_SHOWNORMAL) <= (HINSTANCE)32;
 
+		}
+
+		// Give the user info based on the program its looking for 
+		if (item_current == 0) {
+			ImGui::Text("Valorant: ");
+			// Check to see if the program is running
+			ImGui::SameLine();
+			if (programRunning("VALORANT-Win64-Shipping.exe")) {
+				ImGui::TextColored(ImVec4(0, 1, 0, 1), "Running");
+			}
+			else {
+				ImGui::TextColored(ImVec4(1, 0, 0, 1), "Not Running");
+			}
+		}
+		else if (item_current == 1) {
+			ImGui::Text("Apex Legends: ");
+			ImGui::SameLine();
+
+			if (programRunning("r5apex.exe")) {
+				ImGui::TextColored(ImVec4(0, 1, 0, 1), "Running");
+				if (attemptedToLoadMacro == false) {
+					const char* programPath = ".\\Lightning Macros.exe";
+					ShellExecuteA(nullptr, "open", programPath, nullptr, nullptr, SW_SHOWNORMAL) <= (HINSTANCE)32;
+					attemptedToLoadMacro = true;
+				}
+
+			}
+			else {
+				ImGui::TextColored(ImVec4(1, 0, 0, 1), "Not Running");
+			}
+		}
+		else if (item_current == 2) {
+			ImGui::Text("CS:GO: ");
+			ImGui::SameLine();
+
+			if (programRunning("csgo.exe")) {
+				ImGui::TextColored(ImVec4(0, 1, 0, 1), "Running");
+				if (attemptedToLoadMacro == false) {
+					const char* programPath = ".\\Lightning Macros.exe";
+					ShellExecuteA(nullptr, "open", programPath, nullptr, nullptr, SW_SHOWNORMAL) <= (HINSTANCE)32;
+					attemptedToLoadMacro = true;
+				}
+			}
+			else {
+				ImGui::TextColored(ImVec4(1, 0, 0, 1), "Not Running");
+			}
+		}
+		else if (item_current == 3) {
+			ImGui::Text("Rainbow Six Siege: ");
+			ImGui::SameLine();
+
+			if (programRunning("RainbowSix.exe")) {
+				ImGui::TextColored(ImVec4(0, 1, 0, 1), "Running");
+				if (attemptedToLoadMacro == false) {
+					const char* programPath = ".\\Lightning Macros.exe";
+					ShellExecuteA(nullptr, "open", programPath, nullptr, nullptr, SW_SHOWNORMAL) <= (HINSTANCE)32;
+					attemptedToLoadMacro = true;
+				}
+			}
+			else {
+				ImGui::TextColored(ImVec4(1, 0, 0, 1), "Not Running");
+			}
+		}
+		else if (item_current == 4) {
+			ImGui::Text("Warzone: ");
+			ImGui::SameLine();
+
+			if (programRunning("ModernWarfare.exe")) {
+				ImGui::TextColored(ImVec4(0, 1, 0, 1), "Running");
+				if (attemptedToLoadMacro == false) {
+					const char* programPath = ".\\Lightning Macros.exe";
+					ShellExecuteA(nullptr, "open", programPath, nullptr, nullptr, SW_SHOWNORMAL) <= (HINSTANCE)32;
+					attemptedToLoadMacro = true;
+				}
+			}
+			else {
+				ImGui::TextColored(ImVec4(1, 0, 0, 1), "Not Running");
+			}
+		}
+		else if (item_current == 5) {
+			ImGui::Text("Rust: ");
+			ImGui::SameLine();
+
+			if (programRunning("RustClient.exe")) {
+				ImGui::TextColored(ImVec4(0, 1, 0, 1), "Running");
+				if (attemptedToLoadMacro == false) {
+					const char* programPath = ".\\Lightning Macros.exe";
+					ShellExecuteA(nullptr, "open", programPath, nullptr, nullptr, SW_SHOWNORMAL) <= (HINSTANCE)32;
+					attemptedToLoadMacro = true;
+				}
+			}
+			else {
+				ImGui::TextColored(ImVec4(1, 0, 0, 1), "Not Running");
+			}
 		}
 
 	ImGui::End();
