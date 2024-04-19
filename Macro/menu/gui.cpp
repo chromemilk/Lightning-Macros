@@ -282,7 +282,54 @@ void gui::EndRender() noexcept
 	ImGui::End();
 }*/
 
+bool CustomCheckbox(const char* label, bool* v)
+{
+	ImGuiWindow* window = ImGui::GetCurrentWindow();
+	if (window->SkipItems)
+		return false;
 
+	ImGuiContext& g = *GImGui;
+	const ImGuiStyle& style = g.Style;
+	const ImGuiID id = window->GetID(label);
+	const ImVec2 label_size = ImGui::CalcTextSize(label, NULL, true);
+
+	const float square_sz = ImGui::GetFrameHeight();  // Height and width of the CustomCheckbox are the same
+	const ImVec2 pos = window->DC.CursorPos;
+
+	// CustomCheckbox square definition
+	const ImVec2 CustomCheckbox_pos = pos;
+	const ImRect CustomCheckbox_bb(CustomCheckbox_pos, ImVec2(CustomCheckbox_pos.x + square_sz, CustomCheckbox_pos.y + square_sz));
+
+	ImGui::ItemSize(CustomCheckbox_bb, style.FramePadding.y);
+	if (!ImGui::ItemAdd(CustomCheckbox_bb, id))
+		return false;
+
+	bool hovered, held;
+	bool pressed = ImGui::ButtonBehavior(CustomCheckbox_bb, id, &hovered, &held);
+	if (pressed)
+		*v = !(*v);
+
+	// Render the CustomCheckbox
+	const ImU32 col = ImGui::GetColorU32((*v) ? ImGuiCol_ButtonActive : (hovered ? ImGuiCol_FrameBgHovered : ImGuiCol_FrameBg));
+	window->DrawList->AddRectFilled(CustomCheckbox_bb.Min, CustomCheckbox_bb.Max, col, style.FrameRounding);
+
+	// Render a smaller box inside if checked
+	if (*v)
+	{
+		const float pad = square_sz * 0.2f;  // Internal padding for the inner box
+		ImVec2 inner_min(CustomCheckbox_bb.Min.x + pad, CustomCheckbox_bb.Min.y + pad);
+		ImVec2 inner_max(CustomCheckbox_bb.Max.x - pad, CustomCheckbox_bb.Max.y - pad);
+		window->DrawList->AddRectFilled(inner_min, inner_max, ImGui::GetColorU32(ImGuiCol_CheckMark), style.FrameRounding);
+	}
+
+	// Render the label next to the CustomCheckbox
+	if (label_size.x > 0.0f)
+	{
+		ImGui::RenderText(ImVec2(CustomCheckbox_bb.Max.x + style.ItemInnerSpacing.x, CustomCheckbox_bb.Min.y + style.FramePadding.y), label);
+	}
+
+	return pressed;
+}
 
 
 
@@ -438,7 +485,7 @@ void gui::Render() noexcept
 			colors[ImGuiCol_ResizeGrip] = ImVec4{ 0.2f, 0.2f, 0.2f, 0.3f };
 			colors[ImGuiCol_ResizeGripHovered] = ImVec4{ 0.28f, 0.28f, 0.28f, 0.6f };
 			colors[ImGuiCol_ResizeGripActive] = ImVec4{ 0.4f, 0.4f, 0.4f, 0.9f };
-
+			
 
 			if (PhysicalAttributes::custom_attributes == true) {
 				style.TabRounding = PhysicalAttributes::rounding_tab;        // Less pronounced rounded tabs for a subtler look
@@ -447,11 +494,11 @@ void gui::Render() noexcept
 			}
 
 			else {
-				style.TabRounding = 0;        // Less pronounced rounded tabs for a subtler look
+				style.TabRounding = 3;        // Less pronounced rounded tabs for a subtler look
 				style.ScrollbarRounding = 9;  // Soft, rounded scrollbar for smoother scrolling
 				style.WindowRounding = 0;     // Softly rounded corners for a modern touch
 				style.GrabRounding = 4;       // Rounded grab handles for a cohesive look
-				style.FrameRounding = 0;      // Rounded frames for a softer interface
+				style.FrameRounding = 3;      // Rounded frames for a softer interface
 				style.PopupRounding = 5;      // Consistently rounded pop-up windows for uniformity
 				style.ChildRounding = 5;      // Unified rounded look for child windows
 
@@ -938,9 +985,9 @@ void gui::Render() noexcept
 			}
 			ImGui::EndTabBar();
 			ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
-			ImGui::Checkbox("Active", &No_recoil::active);
-			ImGui::Checkbox("Anti-Cheat bypass", &No_recoil::within_program);
-			ImGui::Checkbox("Humanize", &No_recoil::humanize);
+			CustomCheckbox("Active", &No_recoil::active);
+			CustomCheckbox("Anti-Cheat bypass", &No_recoil::within_program);
+			CustomCheckbox("Humanize", &No_recoil::humanize);
 			if (ImGui::IsItemHovered()) {
 				// Begin the tooltip block
 				ImGui::BeginTooltip();
@@ -952,9 +999,9 @@ void gui::Render() noexcept
 				ImGui::EndTooltip();
 			}
 			ImGui::SetCursorPos(ImVec2(300, 510));
-			ImGui::Checkbox("ADS Only", &No_recoil::adsOnly);
+			CustomCheckbox("ADS Only", &No_recoil::adsOnly);
 			ImGui::SetCursorPos(ImVec2(300, 540));
-			ImGui::Checkbox("Use F12 to switch", &No_recoil::zToSwitch);
+			CustomCheckbox("Use F12 to switch", &No_recoil::zToSwitch);
 
 			ImGui::Spacing();
 			ImGui::SetCursorPos(ImVec2(300, 575));	
@@ -1002,24 +1049,24 @@ void gui::Render() noexcept
 			ImGui::Text("to disable the macro");
 			ImGui::Spacing();
 			ImGui::Spacing();
-			ImGui::Checkbox("Bhop", &Macros::bhop);
+			CustomCheckbox("Bhop", &Macros::bhop);
 			if (Macros::bhop == true) {
 				if (ImGui::Combo("Bhop Key", &Bhop::HotKey, "Menu\0Left Click\0Right Click\0XBUTTON 1\0XBUTTON 2\0Capital\0Shift\0Control")) {
 					Bhop::SetHotKey(Bhop::HotKey);
 				}
 			}
 			ImGui::Spacing();
-			ImGui::Checkbox("Turbo Crouch", &Macros::turbo_crouch);
+			CustomCheckbox("Turbo Crouch", &Macros::turbo_crouch);
 			if (Macros::turbo_crouch == true) {
 				if (ImGui::Combo("Crouch Key", &Crouch::HotKey, "Menu\0Left Click\0Right Click\0XBUTTON 1\0XBUTTON 2\0Capital\0Shift\0Control")) {
 					Crouch::SetHotKey(Crouch::HotKey);
 				}
 			}
 			ImGui::Spacing();
-			ImGui::Checkbox("Tap Fire (happens on fire)", &Macros::rapid_fire);
+			CustomCheckbox("Tap Fire (happens on fire)", &Macros::rapid_fire);
 			ImGui::Spacing();
 			ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
-			ImGui::Checkbox("Master Switch", &Macros::isActive);
+			CustomCheckbox("Master Switch", &Macros::isActive);
 			ImGui::Spacing();
 			if (ImGui::Button("Reset")) {
 				Macros::bhop = false;
@@ -1080,11 +1127,11 @@ void gui::Render() noexcept
 			ImGui::Text("to disable the overlay");
 			ImGui::Spacing();
 			ImGui::Spacing();
-			ImGui::Checkbox("Active", &Overlay::isActive);
+			CustomCheckbox("Active", &Overlay::isActive);
 			if (Overlay::isActive == true) {
-				ImGui::Checkbox("Show anti-recoil status", &Overlay::recoilStatus);
-				ImGui::Checkbox("Show version", &Overlay::currentVersion);
-				ImGui::Checkbox("Show FPS", &Overlay::fps);
+				CustomCheckbox("Show anti-recoil status", &Overlay::recoilStatus);
+				CustomCheckbox("Show version", &Overlay::currentVersion);
+				CustomCheckbox("Show FPS", &Overlay::fps);
 			}
 		}
 		if (Globals::ActiveTab == 5)
@@ -1108,16 +1155,16 @@ void gui::Render() noexcept
 			ImGui::SliderInt("Aim Assist Strength", &AimAssistConfig::assistStrength, 0, 35);
 			ImGui::SliderFloat("Aim Assist FOV", &AimAssistConfig::assistAngle, 1.f, 50.f, "%0.1f");
 			ImGui::SliderFloat("Aim Assist Smoothing", &AimAssistConfig::assistSmooth, 0.1f, 1.f, "%0.01f");
-			ImGui::Checkbox("Aim Assist", &AimAssistConfig::assistActive);
+			CustomCheckbox("Aim Assist", &AimAssistConfig::assistActive);
 		}
 		if (Globals::ActiveTab == 6) {
 			ImGui::SetCursorPos(ImVec2(gui::WIDTH / 2.8, 60));
 			ImGui::Text("           === Misc ===");
-			ImGui::Checkbox("FPS Counter", &Misc::fpsCounter);
-			ImGui::Checkbox("Controller Support", &Controller::hasController);	
-			ImGui::Checkbox("Anti-Afk kick", &Globals::antiAfk);
+			CustomCheckbox("FPS Counter", &Misc::fpsCounter);
+			CustomCheckbox("Controller Support", &Controller::hasController);	
+			CustomCheckbox("Anti-Afk kick", &Globals::antiAfk);
 			ImGui::SetCursorPos(ImVec2(300, 77));
-			ImGui::Checkbox("Low Usage", &Globals::efficentMode);
+			CustomCheckbox("Low Usage", &Globals::efficentMode);
 			if (ImGui::IsItemHovered()) {
 				// Begin the tooltip block
 				ImGui::BeginTooltip();
@@ -1129,7 +1176,7 @@ void gui::Render() noexcept
 				ImGui::EndTooltip();
 			}
 			ImGui::SetCursorPos(ImVec2(300, 108));
-			ImGui::Checkbox("Anti-script check", &Globals::scriptCheck);
+			CustomCheckbox("Anti-script check", &Globals::scriptCheck);
 			if (ImGui::IsItemHovered()) {
 				// Begin the tooltip block
 				ImGui::BeginTooltip();
@@ -1141,7 +1188,7 @@ void gui::Render() noexcept
 				ImGui::EndTooltip();
 			}
 			ImGui::SetCursorPos(ImVec2(300, 140));
-			ImGui::Checkbox("Purple Style", &Globals::styleChanged);
+			CustomCheckbox("Purple Style", &Globals::styleChanged);
 			ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
 			ImGui::SliderInt("Vertical Sens", &Globals::sensY, 0, 100);
 			if (ImGui::IsItemHovered()) {
@@ -1166,7 +1213,7 @@ void gui::Render() noexcept
 				ImGui::EndTooltip();
 			}
 			ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
-			ImGui::Checkbox("Anti-Recoil Limit", &Globals::hasMaxTime);
+			CustomCheckbox("Anti-Recoil Limit", &Globals::hasMaxTime);
 			if (Globals::hasMaxTime == true) {
 				ImGui::SliderInt("Max Time (seconds)", &Globals::maxTime, 0, 100);
 				if (ImGui::IsItemHovered()) {
@@ -1185,14 +1232,14 @@ void gui::Render() noexcept
 			ImGui::SliderInt("Max Vertical", &No_recoil::maxValueY, 0, 50);
 			ImGui::SliderInt("Max/min Horizontal", &No_recoil::maxValueX, 0, 30);
 			ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
-			ImGui::Checkbox("Custom accents", &Colors::customColors);
+			CustomCheckbox("Custom accents", &Colors::customColors);
 			if (Colors::customColors == true) {
 				Globals::styleChanged = false;
-				ImGui::Checkbox("Include text", &Colors::includeText);
+				CustomCheckbox("Include text", &Colors::includeText);
 				ImGui::ColorEdit4("Accent color", (float*)&Colors::accentColor, ImGuiColorEditFlags_NoInputs);
 			}
 			ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
-			ImGui::Checkbox("Custom menu", &PhysicalAttributes::custom_attributes);
+			CustomCheckbox("Custom menu", &PhysicalAttributes::custom_attributes);
 			if (PhysicalAttributes::custom_attributes == true) {
 				Globals::styleChanged = false;
 				ImGui::SliderFloat("Frame rounding", &PhysicalAttributes::rounding_frame, 0.0f, 20.0f, "%.1f");
@@ -1211,7 +1258,7 @@ void gui::Render() noexcept
 				Globals::sensX = 12;
 			}
 			ImGui::SameLine();
-			ImGui::Checkbox("Save on close", &Globals::saveOnClose);
+			CustomCheckbox("Save on close", &Globals::saveOnClose);
 		}
 		if (Globals::ActiveTab == 7) {
 			ImGui::SetCursorPos(ImVec2(gui::WIDTH / 2.8, 60));
@@ -1303,9 +1350,9 @@ void gui::Render() noexcept
 		if (Globals::ActiveTab == 8) {
 			ImGui::SetCursorPos(ImVec2(gui::WIDTH / 2.8, 60));
 			ImGui::Text("           === PixelBot ===");
-			ImGui::Checkbox("Enable", &Triggerbot::isActive);
+			CustomCheckbox("Enable", &Triggerbot::isActive);
 			if (Triggerbot::isActive == true) {
-				ImGui::Checkbox("Smart Pixel Detection", &Triggerbot::useAi);
+				CustomCheckbox("Smart Pixel Detection", &Triggerbot::useAi);
 				ImGui::SliderInt("Accuracy", &Triggerbot::accuracy, 1, 25);
 				if (ImGui::Combo("Hold Key", &Triggerbot::HotKey, "X\0Q\0E\0T\0")) {
 					Triggerbot::SetHotKey(Triggerbot::HotKey);
@@ -1480,7 +1527,8 @@ void gui::Render() noexcept
 			ImGui::TextColored(ImVec4(0, 1, 0, 1), "%d", fileCount);
 
 			ImGui::SetCursorPos(ImVec2((gui::WIDTH / 2) - 150 , 564));
-			ImGui::Checkbox("Detect antivirus problems", &AntiVirus::isChecking);
+			//CustomCheckbox("Detect antivirus problems", &AntiVirus::isChecking);
+			CustomCheckbox("Detect antivirus problems", &AntiVirus::isChecking);
 			if (AntiVirus::isChecking == true) {
 				if (AntiVirus::problem == true) {
 					ImGui::SetCursorPos(ImVec2((gui::WIDTH / 2) - 90, 620));

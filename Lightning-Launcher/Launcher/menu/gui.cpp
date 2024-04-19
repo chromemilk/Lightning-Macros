@@ -272,13 +272,13 @@ void gui::Render() noexcept
 		auto& colors = ImGui::GetStyle().Colors;
 
 		// Main background
-		colors[ImGuiCol_WindowBg] = ImVec4{ 0.10f, 0.10f, 0.10f, 1.00f };
+		colors[ImGuiCol_WindowBg] = ImVec4{ 0.05f, 0.05f, 0.05f, 1.00f }; // Near-black for the main background
 
 		// Menu Bar
-		colors[ImGuiCol_MenuBarBg] = ImVec4{ 0.14f, 0.14f, 0.14f, 1.00f };
+		colors[ImGuiCol_MenuBarBg] = ImVec4{ 0.10f, 0.10f, 0.20f, 1.00f }; // Dark blue for menu bar
 
 		// Borders
-		colors[ImGuiCol_Border] = ImVec4{ 0.23f, 0.23f, 0.23f, 1.00f };
+		colors[ImGuiCol_Border] = ImVec4{ 0.20f, 0.20f, 0.25f, 1.00f }; // Dark blue tint for borders
 		colors[ImGuiCol_BorderShadow] = ImVec4{ 0.00f, 0.00f, 0.00f, 0.00f }; // Clear shadow for a cleaner look
 
 		// Text
@@ -286,56 +286,56 @@ void gui::Render() noexcept
 		colors[ImGuiCol_TextDisabled] = ImVec4{ 0.60f, 0.60f, 0.60f, 1.00f };
 
 		// Headers
-		colors[ImGuiCol_Header] = ImVec4{ 0.40f, 0.40f, 0.40f, 1.00f };
-		colors[ImGuiCol_HeaderHovered] = ImVec4{ 0.45f, 0.45f, 0.45f, 1.00f };
-		colors[ImGuiCol_HeaderActive] = ImVec4{ 0.53f, 0.53f, 0.53f, 1.00f };
+		colors[ImGuiCol_Header] = ImVec4{ 0.15f, 0.15f, 0.25f, 1.00f }; // Dark blue for headers
+		colors[ImGuiCol_HeaderHovered] = ImVec4{ 0.20f, 0.20f, 0.30f, 1.00f }; // Slightly lighter blue when hovered
+		colors[ImGuiCol_HeaderActive] = ImVec4{ 0.25f, 0.25f, 0.35f, 1.00f }; // Even lighter blue when active
 
 		// Buttons
-		colors[ImGuiCol_Button] = ImVec4{ 0.25f, 0.25f, 0.25f, 1.00f };
-		colors[ImGuiCol_ButtonHovered] = ImVec4{ 0.30f, 0.30f, 0.30f, 1.00f };
-		colors[ImGuiCol_ButtonActive] = ImVec4{ 0.35f, 0.35f, 0.35f, 1.00f };
+		colors[ImGuiCol_Button] = ImVec4{ 0.15f, 0.15f, 0.25f, 1.00f }; // Dark blue for buttons
+		colors[ImGuiCol_ButtonHovered] = ImVec4{ 0.20f, 0.20f, 0.30f, 1.00f };
+		colors[ImGuiCol_ButtonActive] = ImVec4{ 0.25f, 0.25f, 0.35f, 1.00f };
 
 		// CheckMark
 		colors[ImGuiCol_CheckMark] = ImVec4{ 0.90f, 0.90f, 0.00f, 1.00f }; // Yellow for visibility
 
 		// Popups
-		colors[ImGuiCol_PopupBg] = ImVec4{ 0.12f, 0.12f, 0.12f, 0.92f };
+		colors[ImGuiCol_PopupBg] = ImVec4{ 0.08f, 0.08f, 0.10f, 0.92f }; // Darker blue for popups
 
 		// Slider
-		colors[ImGuiCol_SliderGrab] = ImVec4{ 0.90f, 0.90f, 0.00f, 1.00f }; // Yellow for visibility
-		colors[ImGuiCol_SliderGrabActive] = ImVec4{ 1.00f, 1.00f, 0.14f, 1.00f }; // Bright yellow for active state
+		colors[ImGuiCol_SliderGrab] = ImVec4{ 0.20f, 0.20f, 0.25f, 1.00f }; // Dark blue for slider grab
+		colors[ImGuiCol_SliderGrabActive] = ImVec4{ 0.25f, 0.25f, 0.35f, 1.00f }; // Lighter blue for active slider grab
 
 		// Frame BG
-		colors[ImGuiCol_FrameBg] = ImVec4{ 0.20f, 0.20f, 0.20f, 1.00f };
-		colors[ImGuiCol_FrameBgHovered] = ImVec4{ 0.25f, 0.25f, 0.25f, 1.00f };
-		colors[ImGuiCol_FrameBgActive] = ImVec4{ 0.30f, 0.30f, 0.30f, 1.00f };
+		colors[ImGuiCol_FrameBg] = ImVec4{ 0.10f, 0.10f, 0.15f, 1.00f }; // Dark blue for frame background
+		colors[ImGuiCol_FrameBgHovered] = ImVec4{ 0.15f, 0.15f, 0.20f, 1.00f };
+		colors[ImGuiCol_FrameBgActive] = ImVec4{ 0.20f, 0.20f, 0.25f, 1.00f };
 
 		// Tabs
-		colors[ImGuiCol_Tab] = ImVec4{ 0.20f, 0.20f, 0.20f, 1.00f };
-		colors[ImGuiCol_TabHovered] = ImVec4{ 0.60f, 0.60f, 0.60f, 1.00f };
-		colors[ImGuiCol_TabActive] = ImVec4{ 0.28f, 0.28f, 0.28f, 1.00f };
-		colors[ImGuiCol_TabUnfocused] = ImVec4{ 0.15f, 0.15f, 0.15f, 1.00f };
-		colors[ImGuiCol_TabUnfocusedActive] = ImVec4{ 0.25f, 0.25f, 0.25f, 1.00f };
+		colors[ImGuiCol_Tab] = ImVec4{ 0.10f, 0.10f, 0.15f, 1.00f };
+		colors[ImGuiCol_TabHovered] = ImVec4{ 0.25f, 0.25f, 0.30f, 1.00f };
+		colors[ImGuiCol_TabActive] = ImVec4{ 0.15f, 0.15f, 0.20f, 1.00f };
+		colors[ImGuiCol_TabUnfocused] = ImVec4{ 0.10f, 0.10f, 0.15f, 1.00f };
+		colors[ImGuiCol_TabUnfocusedActive] = ImVec4{ 0.15f, 0.15f, 0.20f, 1.00f };
 
 		// Title
-		colors[ImGuiCol_TitleBg] = ImVec4{ 0.12f, 0.12f, 0.12f, 1.0f }; // Dark gray for title background
-		colors[ImGuiCol_TitleBgActive] = ImVec4{ 0.18f, 0.18f, 0.18f, 1.0f }; // Slightly lighter gray for active title
-		colors[ImGuiCol_TitleBgCollapsed] = ImVec4{ 0.12f, 0.12f, 0.12f, 1.0f }; // Dark gray for collapsed title
+		colors[ImGuiCol_TitleBg] = ImVec4{ 0.08f, 0.08f, 0.10f, 1.0f }; // Dark blue for title background
+		colors[ImGuiCol_TitleBgActive] = ImVec4{ 0.10f, 0.10f, 0.12f, 1.0f }; // Slightly lighter blue for active title
+		colors[ImGuiCol_TitleBgCollapsed] = ImVec4{ 0.08f, 0.08f, 0.10f, 1.0f }; // Same as title background for collapsed title
 
 		// Scrollbar
-		colors[ImGuiCol_ScrollbarBg] = ImVec4{ 0.05f, 0.05f, 0.05f, 1.0f }; // Darker gray for scrollbar background
-		colors[ImGuiCol_ScrollbarGrab] = ImVec4{ 0.18f, 0.18f, 0.18f, 1.0f }; // Gray for scrollbar grab
-		colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4{ 0.21f, 0.21f, 0.21f, 1.0f }; // Slightly lighter gray for hovered scrollbar grab
-		colors[ImGuiCol_ScrollbarGrabActive] = ImVec4{ 0.24f, 0.24f, 0.24f, 1.0f }; // Even lighter gray for active scrollbar grab
+		colors[ImGuiCol_ScrollbarBg] = ImVec4{ 0.02f, 0.02f, 0.03f, 1.0f }; // Very dark blue for scrollbar background
+		colors[ImGuiCol_ScrollbarGrab] = ImVec4{ 0.10f, 0.10f, 0.15f, 1.0f }; // Dark blue for scrollbar grab
+		colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4{ 0.12f, 0.12f, 0.17f, 1.0f }; // Slightly lighter blue for hovered scrollbar grab
+		colors[ImGuiCol_ScrollbarGrabActive] = ImVec4{ 0.15f, 0.15f, 0.20f, 1.0f }; // Even lighter blue for active scrollbar grab
 
 		// Separator
-		colors[ImGuiCol_Separator] = ImVec4{ 0.14f, 0.14f, 0.14f, 1.0f }; // Gray for separator
-		colors[ImGuiCol_SeparatorHovered] = ImVec4{ 0.26f, 0.26f, 0.26f, 1.0f }; // Lighter gray for hovered separator
+		colors[ImGuiCol_Separator] = ImVec4{ 0.10f, 0.10f, 0.15f, 1.0f }; // Dark blue for separator
+		colors[ImGuiCol_SeparatorHovered] = ImVec4{ 0.12f, 0.12f, 0.17f, 1.0f };
 		colors[ImGuiCol_SeparatorActive] = ImVec4{ 0.90f, 0.90f, 0.00f, 1.0f }; // Yellow for active separator
 
 		// Resize Grip
-		colors[ImGuiCol_ResizeGrip] = ImVec4{ 0.18f, 0.18f, 0.18f, 0.25f }; // Semi-transparent gray for resize grip
-		colors[ImGuiCol_ResizeGripHovered] = ImVec4{ 0.21f, 0.21f, 0.21f, 0.67f }; // Slightly lighter and more opaque for hovered resize grip
+		colors[ImGuiCol_ResizeGrip] = ImVec4{ 0.10f, 0.10f, 0.15f, 0.25f }; // Semi-transparent dark blue for resize grip
+		colors[ImGuiCol_ResizeGripHovered] = ImVec4{ 0.12f, 0.12f, 0.17f, 0.67f };
 		colors[ImGuiCol_ResizeGripActive] = ImVec4{ 0.90f, 0.90f, 0.00f, 1.0f }; // Yellow for active resize grip
 
 
