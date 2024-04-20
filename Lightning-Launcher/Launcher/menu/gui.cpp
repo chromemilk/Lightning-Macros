@@ -18,6 +18,7 @@
 #include <cstdio>
 #include <tlhelp32.h>
 #include <tchar.h>
+#include <vector>
 
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(
@@ -272,6 +273,45 @@ bool programRunning(std::string pName) {
 }
 
 
+void writeCfg(std::string program, bool awaitStart) {
+	// Check to see if "autoStart" file exists
+	std::ifstream file(".\\autoStart.txt");
+	// If it exists, wipe the file contents and re-write the new data
+	if (file.good()) {
+		std::ofstream file(".\\autoStart.txt");
+		file << program << std::endl;
+		file << awaitStart << std::endl;
+		file.close();
+	}
+	else {
+		// If not, create the file and write the data
+		std::ofstream file(".\\autoStart.txt");
+		file << program << std::endl;
+		file << awaitStart << std::endl;
+		file.close();
+	}
+}
+
+ std::string loadCfgOnStart() {
+	 std::string actualContents;
+	 std::ifstream file(".\\autoStart.txt");
+	 std::string program;
+	 bool awaitStart;
+	if (file.good()) {
+		file >> program;
+		file >> awaitStart;
+		file.close();
+	}
+	actualContents += program;
+	actualContents += " ";
+	actualContents += std::to_string(awaitStart);
+	return actualContents;
+}
+
+
+ namespace Globals {
+	 inline bool editing = false;
+ }
 
 
 void gui::Render() noexcept
@@ -359,7 +399,7 @@ void gui::Render() noexcept
 	auto& style = ImGui::GetStyle();
 
 	// Increase the rounding for a more bubbly look
-	style.TabRounding = 8;        // More rounded tabs
+	style.TabRounding = 5;        // More rounded tabs
 	style.ScrollbarRounding = 12; // Very rounded scrollbar
 	style.WindowRounding = 6;     // Gently rounded corners for the windows
 	style.GrabRounding = 6;       // Rounded grab handles on sliders
@@ -368,7 +408,7 @@ void gui::Render() noexcept
 	style.ChildRounding = 6;      // Rounded child windows
 
 	// You might also want to increase padding and spacing to enhance the bubbly effect
-	style.FramePadding = ImVec2(10, 10);       // Padding within the frames
+	style.FramePadding = ImVec2(8, 8);       // Padding within the frames
 	style.ItemSpacing = ImVec2(1, 6);        // Spacing between items/widgets
 	style.ItemInnerSpacing = ImVec2(1, 1);   // Spacing within a complex item (e.g., within a combo box)
 	style.ScrollbarSize = 10;
@@ -386,14 +426,50 @@ void gui::Render() noexcept
 	static const char* items[] = { "Valorant", "Apex Legends", "CS:GO", "Rainbow Six Siege", "Warzone", "Rust" };
 	static int item_current = 0;
 	
+	static bool awaitProgramStart = false;
 
-		ImGui::SetNextItemWidth(170);
+	static bool triedToLoadCfg = false;
 
-		if (ImGui::Combo("##combo", &item_current, items, IM_ARRAYSIZE(items))) {
+	static std::string programT;
+	if (triedToLoadCfg == false) {
+		std::string settings = loadCfgOnStart();
+		// Split the string into two parts
+		std::string program = settings.substr(0, settings.find(" "));
+		std::string awaitStart = settings.substr(settings.find(" ") + 1, settings.length());
+		// Convert the string to a bool
+		if (Globals::editing == false) {
 
+			bool awaitStartBool = awaitStart == "1" ? true : false;
+			if (awaitStartBool == true) {
+				awaitProgramStart = true;
+			}
+			// Set the combo box to the program
+			if (program == "Valorant") {
+				item_current = 0;
+			}
+			else if (program == "Apex Legends") {
+				item_current = 1;
+			}
+			else if (program == "CS:GO") {
+				item_current = 2;
+			}
+			else if (program == "Rainbow Six Siege") {
+				item_current = 3;
+			}
+			else if (program == "Warzone") {
+				item_current = 4;
+			}
+			else if (program == "Rust") {
+				item_current = 5;
+			}
 		}
+	}
 
+	
 
+		
+	ImGui::BeginTabBar("Tabs", ImGuiTabBarFlags_None);
+	if (ImGui::BeginTabItem("Main")) {
 		if (isChecking == true) {
 			std::ifstream file(".\\ExternalCrossHairOverlay.exe");
 			if (file.good()) {
@@ -415,11 +491,6 @@ void gui::Render() noexcept
 
 
 
-		ImGui::SetCursorPos(ImVec2((gui::WIDTH / 2) - 30, gui::HEIGHT - 250));
-		if (ImGui::Button("Crosshair")) {
-			const char* programPath = ".\\ExternalCrossHairOverlay.exe";
-			ShellExecuteA(nullptr, "open", programPath, nullptr, nullptr, SW_SHOWNORMAL) <= (HINSTANCE)32;
-		}
 		ImGui::SetCursorPos(ImVec2((gui::WIDTH / 2) - 34, gui::HEIGHT - 190));
 		if (ImGui::Button("Full Macro")) {
 			const char* programPath = ".\\Lightning Macros.exe";
@@ -531,6 +602,21 @@ void gui::Render() noexcept
 				ImGui::TextColored(ImVec4(1, 0, 0, 1), "Not Running");
 			}
 		}
+		ImGui::EndTabItem();
+	}
+
+	if (ImGui::BeginTabItem("Auto Exec")) {
+		if (ImGui::Combo("##combo", &item_current, items, IM_ARRAYSIZE(items))) {
+
+		}
+		ImGui::Checkbox("Await Program Start", &awaitProgramStart);
+		ImGui::Checkbox("Edit Auto Start", &Globals::editing);
+		if (ImGui::Button("Write To File")) {
+			writeCfg(items[item_current], awaitProgramStart);
+		}
+		ImGui::EndTabItem();
+	}
+	ImGui::EndTabBar();
 
 	ImGui::End();
 }
