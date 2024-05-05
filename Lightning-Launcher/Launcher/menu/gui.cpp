@@ -611,6 +611,16 @@ void gui::Render() noexcept
 		}
 		ImGui::Checkbox("Await Program Start", &awaitProgramStart);
 		ImGui::Checkbox("Edit Auto Start", &Globals::editing);
+		if (ImGui::IsItemHovered()) {
+			// Begin the tooltip block
+			ImGui::BeginTooltip();
+
+			// Add text to the tooltip
+			ImGui::Text("Click this to edit the auto execute");
+
+			// End the tooltip block
+			ImGui::EndTooltip();
+		}
 		if (ImGui::Button("Write To File")) {
 			writeCfg(items[item_current], awaitProgramStart);
 		}

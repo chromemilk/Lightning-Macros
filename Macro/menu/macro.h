@@ -182,11 +182,13 @@ namespace Macros {
 			}
 		}
 		if (Macros::rapid_fire && Macros::isActive) {
+			mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
+
 				if (GetAsyncKeyState(VK_LBUTTON)) {
 					mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
-					Sleep(1000);
+					Sleep(10);
 					mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
-					Sleep(100);
+					Sleep(10);
 				}
 		}
 	}
