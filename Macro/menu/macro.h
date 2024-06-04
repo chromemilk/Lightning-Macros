@@ -586,6 +586,17 @@ inline float accentColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 inline ImVec4 accentColorImVec4 = ImVec4(accentColor[0], accentColor[1], accentColor[2], accentColor[3]);
 }
 
+namespace CustomMacros {
+	// All commands for the given custom macro will be stored here
+	inline vector<std::string> keyCommands = {};
+	// This will hold the delay before running each command; this has a 1:1 relationship with keyCommands
+	inline vector<int> timeBetweenCommands = {};
+	inline int currentDelay = 1;
+	inline void Run() {
+
+	}
+}
+
 namespace PhysicalAttributes {
 	inline bool custom_attributes = false;
 	inline float rounding_slider = 0.0f;

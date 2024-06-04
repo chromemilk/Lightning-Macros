@@ -1049,42 +1049,120 @@ void gui::Render() noexcept
 			ImGui::Text("to disable the macro");
 			ImGui::Spacing();
 			ImGui::Spacing();
-			CustomCheckbox("Bhop", &Macros::bhop);
-			if (Macros::bhop == true) {
-				if (ImGui::Combo("Bhop Key", &Bhop::HotKey, "Menu\0Left Click\0Right Click\0XBUTTON 1\0XBUTTON 2\0Capital\0Shift\0Control")) {
-					Bhop::SetHotKey(Bhop::HotKey);
+			ImGui::BeginTabBar("Macros");
+			if (ImGui::BeginTabItem("Default")) {
+				CustomCheckbox("Bhop", &Macros::bhop);
+				if (Macros::bhop == true) {
+					if (ImGui::Combo("Bhop Key", &Bhop::HotKey, "Menu\0Left Click\0Right Click\0XBUTTON 1\0XBUTTON 2\0Capital\0Shift\0Control")) {
+						Bhop::SetHotKey(Bhop::HotKey);
+					}
 				}
-			}
-			ImGui::Spacing();
-			CustomCheckbox("Turbo Crouch", &Macros::turbo_crouch);
-			if (Macros::turbo_crouch == true) {
-				if (ImGui::Combo("Crouch Key", &Crouch::HotKey, "Menu\0Left Click\0Right Click\0XBUTTON 1\0XBUTTON 2\0Capital\0Shift\0Control")) {
-					Crouch::SetHotKey(Crouch::HotKey);
+				ImGui::Spacing();
+				CustomCheckbox("Turbo Crouch", &Macros::turbo_crouch);
+				if (Macros::turbo_crouch == true) {
+					if (ImGui::Combo("Crouch Key", &Crouch::HotKey, "Menu\0Left Click\0Right Click\0XBUTTON 1\0XBUTTON 2\0Capital\0Shift\0Control")) {
+						Crouch::SetHotKey(Crouch::HotKey);
+					}
 				}
+				ImGui::Spacing();
+				CustomCheckbox("Tap Fire (happens on fire)", &Macros::rapid_fire);
+				ImGui::Spacing();
+				ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
+				CustomCheckbox("Master Switch", &Macros::isActive);
+				ImGui::Spacing();
+				if (ImGui::Button("Reset")) {
+					Macros::bhop = false;
+					Macros::turbo_crouch = false;
+					Macros::rapid_fire = false;
+				}
+				ImGui::Spacing();
+				if (Macros::isActive) {
+					ImGui::Text("Macro Status:");
+					ImGui::SameLine();
+					ImGui::TextColored(ImVec4(0, 1, 0, 1), "Active");
+				}
+				else {
+					ImGui::Text("Macro Status:");
+					ImGui::SameLine();
+					ImGui::TextColored(ImVec4(1, 0, 0, 1), "Not Active");
+				}
+				ImGui::Spacing();
+				ImGui::EndTabItem();
 			}
-			ImGui::Spacing();
-			CustomCheckbox("Tap Fire (happens on fire)", &Macros::rapid_fire);
-			ImGui::Spacing();
-			ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
-			CustomCheckbox("Master Switch", &Macros::isActive);
-			ImGui::Spacing();
-			if (ImGui::Button("Reset")) {
-				Macros::bhop = false;
-				Macros::turbo_crouch = false;
-				Macros::rapid_fire = false;
+			if (ImGui::BeginTabItem("Custom")) {
+				ImGui::SetCursorPos(ImVec2(210, 180));
+
+				ImGui::Text("Custom macros are still in development");
+				// Add a button that will add a keybind to the custom macros
+				// Delete this later
+				static int currentCount = 0;
+				// Add the button here
+				ImGui::SetCursorPos(ImVec2(150, 200));
+				if (ImGui::Button("Add Keybind", ImVec2(400, 40))) {
+					currentCount += 1;
+					CustomMacros::keyCommands.push_back("Keybind " + std::to_string(currentCount));
+					// Add the delay to the vector
+					CustomMacros::timeBetweenCommands.push_back(CustomMacros::currentDelay);
+				}
+				// Add a slide for the delay
+				ImGui::SetCursorPos(ImVec2(185, 250));
+
+				ImGui::SliderInt("Delay ms", &CustomMacros::currentDelay, 1, 100);
+				// Add a separator for a cleaner look
+				ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
+
+
+				ImGui::Spacing();
+				ImGuiStyle& oldStyle = ImGui::GetStyle();
+				float oldWindowRounding = oldStyle.WindowRounding;
+				float oldChildRounding = oldStyle.ChildRounding;
+				if (Globals::styleChanged == true) {
+					ImVec4 oldChildBg = ImVec4(0.0784313753247261f, 0.08627451211214066f, 0.1019607856869698f, 1.0f);
+				}
+				else {
+
+				}
+				ImVec4 oldBorderColor = oldStyle.Colors[ImGuiCol_Border];
+				float oldBorderSize = oldStyle.WindowBorderSize;
+
+				// Adjust the style for the child window
+				oldStyle.WindowRounding = 5.0f; // Adjust rounding of the corners
+				oldStyle.ChildRounding = 5.0f;
+				oldStyle.Colors[ImGuiCol_Border] = ImVec4(0.85f, 0.85f, 0.78f, 0.7f); // Bone white border color
+				oldStyle.WindowBorderSize = 1.0f; // Set the border size
+				ImGui::SetCursorPos(ImVec2(150, 290));
+				ImGui::BeginChild("macroKeys", ImVec2(400, 320), true);
+				// TODO: Switch this over to a traditional for loop lmao this sucks
+				for (auto& entry : CustomMacros::keyCommands)
+				{
+
+						// Unique ID for each entry
+						ImGui::PushID(entry.c_str());
+						// Also display the delay for each entry
+						if (ImGui::Button(entry.c_str())) {
+						}
+						ImGui::SameLine();
+						// Ensure each "Delete" button has a unique ID within the loop
+						if (ImGui::Button("Delete")) {
+							// Remove the entry from the specific id index
+							CustomMacros::keyCommands.erase(std::remove(CustomMacros::keyCommands.begin(), CustomMacros::keyCommands.end(), entry), CustomMacros::keyCommands.end());
+							// Also delete the same index from the delay vector
+							CustomMacros::timeBetweenCommands.erase(CustomMacros::timeBetweenCommands.begin() + ImGui::GetID(entry.c_str()));
+						}
+						ImGui::Text("-------------------------------------------------------");
+
+						// Pop the ID after the buttons for this entry
+						ImGui::PopID();
+				}
+				ImGui::EndChild();
+
+				style.WindowRounding = oldWindowRounding;
+				style.ChildRounding = oldChildRounding;
+				style.Colors[ImGuiCol_Border] = oldBorderColor;
+				style.WindowBorderSize = oldBorderSize;
+				ImGui::EndTabItem();
 			}
-			ImGui::Spacing();
-			if (Macros::isActive) {
-				ImGui::Text("Macro Status:");
-				ImGui::SameLine();
-				ImGui::TextColored(ImVec4(0, 1, 0, 1), "Active");
-			}
-			else {
-				ImGui::Text("Macro Status:");
-				ImGui::SameLine();
-				ImGui::TextColored(ImVec4(1, 0, 0, 1), "Not Active");
-			}
-			ImGui::Spacing();
+			ImGui::EndTabBar();
 
 		}
 		if (Globals::ActiveTab == 3)
