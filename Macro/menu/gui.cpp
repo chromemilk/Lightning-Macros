@@ -1172,6 +1172,10 @@ void gui::Render() noexcept
 	
 
 				// Static variables for handling the keybind selection
+				ImGui::SetCursorPos(ImVec2(210, 180));
+				ImGui::Text("Custom macros are still in development");
+
+				// Static variables for handling the keybind selection
 				static bool showPopup = false;
 				static std::string selectedKeybind = "";
 
@@ -1238,15 +1242,17 @@ void gui::Render() noexcept
 				ImGui::Spacing();
 
 				// Button to set the run keybind
-				ImGui::SetCursorPos(ImVec2(150, 150));
+				ImGui::SetCursorPos(ImVec2(150, 290));
 				if (ImGui::Button("Set Run Keybind", ImVec2(400, 40))) {
 					CustomMacros::settingRunKeybind = true;
 				}
 
 				if (CustomMacros::settingRunKeybind) {
+					ImGui::SetCursorPos(ImVec2(230, 335));
+
 					ImGui::Text("Press a key to set as Run Keybind...");
 					for (int vkCode = 0x41; vkCode <= 0x5A; ++vkCode) { // A to Z
-						if (IsKeyPressed(vkCode)) {
+						if (GetAsyncKeyState(vkCode) & 0x8000) {
 							CustomMacros::runKeybind = std::string(1, static_cast<char>(vkCode));
 							CustomMacros::settingRunKeybind = false;
 							break;
@@ -1254,6 +1260,7 @@ void gui::Render() noexcept
 					}
 				}
 				else if (!CustomMacros::runKeybind.empty()) {
+					ImGui::SetCursorPos(ImVec2(300, 335));
 					ImGui::Text("Run Keybind: %s", CustomMacros::runKeybind.c_str());
 				}
 
@@ -1269,8 +1276,8 @@ void gui::Render() noexcept
 				style.Colors[ImGuiCol_Border] = ImVec4(0.85f, 0.85f, 0.78f, 0.7f); // Bone white border color
 				style.WindowBorderSize = 1.0f; // Set the border size
 
-				ImGui::SetCursorPos(ImVec2(150, 290));
-				ImGui::BeginChild("macroKeys", ImVec2(400, 320), true);
+				ImGui::SetCursorPos(ImVec2(150, 350));
+				ImGui::BeginChild("macroKeys", ImVec2(400, 240), true);
 
 				for (size_t i = 0; i < CustomMacros::keyCommands.size(); i++) {
 					std::string& entry = CustomMacros::keyCommands[i];
@@ -1307,6 +1314,7 @@ void gui::Render() noexcept
 				style.ChildRounding = oldChildRounding;
 				style.Colors[ImGuiCol_Border] = oldBorderColor;
 				style.WindowBorderSize = oldBorderSize;
+
 				ImGui::EndTabItem();
 			}
 	
