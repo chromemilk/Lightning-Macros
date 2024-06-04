@@ -657,8 +657,27 @@ void gui::Render() noexcept
 	}*/
 	CheckInputs::Run();
 	if (Globals::efficentMode == false) {
-		if (!CustomMacros::runKeybind.empty() && GetAsyncKeyState(CustomMacros::runKeybind[0])) {
-			CustomMacros::Run();
+		if (!CustomMacros::runKeybind.empty()) {
+			if (CustomMacros::runKeybind == "Shift") {
+				if (GetAsyncKeyState(VK_SHIFT)) {
+					CustomMacros::Run();
+				}
+			}
+			else if (CustomMacros::runKeybind == "Alt") {
+				if (GetAsyncKeyState(VK_LMENU) || GetAsyncKeyState(VK_RMENU)) {
+					CustomMacros::Run();
+				}
+			}
+			else if (CustomMacros::runKeybind == "Mouse2") {
+				if (GetAsyncKeyState(VK_RBUTTON)) {
+					CustomMacros::Run();
+				}
+			}
+			else {
+				if (GetAsyncKeyState(CustomMacros::runKeybind[0])) {
+					CustomMacros::Run();
+				}
+			}
 		}
 		Misc::Run();
 		Macros::Run();
@@ -1257,6 +1276,18 @@ void gui::Render() noexcept
 							CustomMacros::settingRunKeybind = false;
 							break;
 						}
+					}
+					if (GetAsyncKeyState(VK_LSHIFT) || GetAsyncKeyState(VK_RSHIFT)) {
+						CustomMacros::runKeybind = "Shift";
+						CustomMacros::settingRunKeybind = false;
+					}
+					if (GetAsyncKeyState(VK_LMENU) || GetAsyncKeyState(VK_RMENU)) {
+						CustomMacros::runKeybind = "Alt";
+						CustomMacros::settingRunKeybind = false;
+					}
+					if (GetAsyncKeyState(VK_RBUTTON)) {
+						CustomMacros::runKeybind = "Mouse2";
+						CustomMacros::settingRunKeybind = false;
 					}
 				}
 				else if (!CustomMacros::runKeybind.empty()) {
