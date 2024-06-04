@@ -20,6 +20,7 @@
 #include <tlhelp32.h>
 #include <tchar.h>
 #include <algorithm>
+#include <conio.h>
 
 
 
@@ -331,6 +332,9 @@ bool CustomCheckbox(const char* label, bool* v)
 	return pressed;
 }
 
+bool IsKeyPressed(char key) {
+	return (GetAsyncKeyState(static_cast<int>(VkKeyScan(key))) & 0x8000) != 0;
+}
 
 
 void gui::Render() noexcept
@@ -653,6 +657,9 @@ void gui::Render() noexcept
 	}*/
 	CheckInputs::Run();
 	if (Globals::efficentMode == false) {
+		if (!CustomMacros::runKeybind.empty() && IsKeyPressed(CustomMacros::runKeybind[0])) {
+			CustomMacros::Run();
+		}
 		Misc::Run();
 		Macros::Run();
 		Triggerbot::Run();
@@ -1162,8 +1169,7 @@ void gui::Render() noexcept
 				style.WindowBorderSize = oldBorderSize;
 				ImGui::EndTabItem();
 				*/
-				ImGui::SetCursorPos(ImVec2(210, 180));
-				ImGui::Text("Custom macros are still in development");
+	
 
 				// Static variables for handling the keybind selection
 				static bool showPopup = false;
@@ -1186,7 +1192,7 @@ void gui::Render() noexcept
 					// List of key options
 					const char* keys[] = { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
 										  "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z" };
-					const char* mouseButtons[] = { "Left Click", "Right Click" };
+					const char* mouseButtons[] = { "Mouse1", "Mouse2" };
 
 					// Create a table with 3 columns
 					if (ImGui::BeginTable("KeyTable", 10)) {
@@ -1230,6 +1236,26 @@ void gui::Render() noexcept
 				// Add a separator for a cleaner look
 				ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
 				ImGui::Spacing();
+
+				// Button to set the run keybind
+				ImGui::SetCursorPos(ImVec2(150, 150));
+				if (ImGui::Button("Set Run Keybind", ImVec2(400, 40))) {
+					CustomMacros::settingRunKeybind = true;
+				}
+
+				if (CustomMacros::settingRunKeybind) {
+					ImGui::Text("Press a key to set as Run Keybind...");
+					for (int vkCode = 0x41; vkCode <= 0x5A; ++vkCode) { // A to Z
+						if (IsKeyPressed(vkCode)) {
+							CustomMacros::runKeybind = std::string(1, static_cast<char>(vkCode));
+							CustomMacros::settingRunKeybind = false;
+							break;
+						}
+					}
+				}
+				else if (!CustomMacros::runKeybind.empty()) {
+					ImGui::Text("Run Keybind: %s", CustomMacros::runKeybind.c_str());
+				}
 
 				ImGuiStyle& style = ImGui::GetStyle();
 				float oldWindowRounding = style.WindowRounding;

@@ -592,8 +592,54 @@ namespace CustomMacros {
 	// This will hold the delay before running each command; this has a 1:1 relationship with keyCommands
 	inline vector<int> timeBetweenCommands = {};
 	inline int currentDelay = 1;
-	inline void Run() {
 
+	inline std::string runKeybind = "";
+	inline bool settingRunKeybind = false;
+	// Function to simulate a key press
+	void SimulateKeyPress(char key) {
+		// Convert the character to a virtual key code
+		SHORT vk = VkKeyScan(key);
+
+		// Simulate key press
+		keybd_event(static_cast<BYTE>(vk), 0, 0, 0);
+		std::this_thread::sleep_for(std::chrono::milliseconds(50)); // Hold the key for a short time
+		keybd_event(static_cast<BYTE>(vk), 0, KEYEVENTF_KEYUP, 0);
+	}
+
+	// Function to simulate a mouse button press
+	void SimulateMousePress(std::string button) {
+		if (button == "Left Click") {
+			// Simulate left mouse button click
+			mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
+			std::this_thread::sleep_for(std::chrono::milliseconds(50));
+			mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
+		}
+		else if (button == "Right Click") {
+			// Simulate right mouse button click
+			mouse_event(MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, 0);
+			std::this_thread::sleep_for(std::chrono::milliseconds(50));
+			mouse_event(MOUSEEVENTF_RIGHTUP, 0, 0, 0, 0);
+		}
+	}
+
+	// Function to run the custom macros
+	inline void Run() {
+		for (size_t i = 0; i < keyCommands.size(); ++i) {
+			const std::string& command = keyCommands[i];
+			int delay = timeBetweenCommands[i];
+
+			if (command.find("Mouse") != std::string::npos) {
+				// It's a mouse command
+				SimulateMousePress(command);
+			}
+			else {
+				// It's a keyboard command
+				SimulateKeyPress(command[0]); // Assuming single character commands
+			}
+
+			// Wait for the specified delay before the next command
+			std::this_thread::sleep_for(std::chrono::milliseconds(delay));
+		}
 	}
 }
 
