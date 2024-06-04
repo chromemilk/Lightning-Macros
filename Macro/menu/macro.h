@@ -731,6 +731,10 @@ namespace MenuConfig {
 					//else if (key == "Aimbot::usesHumanAnatomy") Aimbot::usesHumanAnatomy = value == "1";
 					else if (key == "Globals::hasMaxTime") Globals::hasMaxTime = value == "1";
 					else if (key == "Globals::maxTime") Globals::maxTime = std::stoi(value);
+					// *** Custom Macros ***
+					else if (key == "CustomMacros::keyCommands") CustomMacros::keyCommands.push_back(value);
+					else if (key == "CustomMacros::timeBetweenCommands") CustomMacros::timeBetweenCommands.push_back(std::stoi(value));
+					else if (key == "CustomMacros::runKeybind") CustomMacros::runKeybind = value;
 					// *** Physical Attributes ***
 					else if (key == "PhysicalAttributes::custom_attributes") PhysicalAttributes::custom_attributes = value == "1";
 					else if (key == "PhysicalAttributes::rounding_slider") PhysicalAttributes::rounding_slider = std::stof(value);
@@ -833,7 +837,12 @@ namespace MenuConfig {
 		configFile << "PhysicalAttributes::rounding_slider=" << PhysicalAttributes::rounding_slider << '\n';
 		configFile << "PhysicalAttributes::rounding_frame=" << PhysicalAttributes::rounding_frame << '\n';
 		configFile << "PhysicalAttributes::rounding_tab=" << PhysicalAttributes::rounding_tab << '\n';
-
+		// *** Add the custom macros ***
+		for (size_t i = 0; i < CustomMacros::keyCommands.size(); ++i) {
+			configFile << "CustomMacros::keyCommands=" << CustomMacros::keyCommands[i] << '\n';
+			configFile << "CustomMacros::timeBetweenCommands=" << CustomMacros::timeBetweenCommands[i] << '\n';
+		}
+		configFile << "CustomMacros::runKeybind=" << CustomMacros::runKeybind << '\n';
 
 		// Close the file
 		configFile.close();
