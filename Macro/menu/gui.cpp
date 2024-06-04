@@ -1090,7 +1090,7 @@ void gui::Render() noexcept
 				ImGui::EndTabItem();
 			}
 			if (ImGui::BeginTabItem("Custom")) {
-				ImGui::SetCursorPos(ImVec2(210, 180));
+				/*ImGui::SetCursorPos(ImVec2(210, 180));
 
 				ImGui::Text("Custom macros are still in development");
 				// Add a button that will add a keybind to the custom macros
@@ -1161,7 +1161,129 @@ void gui::Render() noexcept
 				style.Colors[ImGuiCol_Border] = oldBorderColor;
 				style.WindowBorderSize = oldBorderSize;
 				ImGui::EndTabItem();
+				*/
+				ImGui::SetCursorPos(ImVec2(210, 180));
+				ImGui::Text("Custom macros are still in development");
+
+				// Static variables for handling the keybind selection
+				static bool showPopup = false;
+				static std::string selectedKeybind = "";
+
+				// Add the button here
+				ImGui::SetCursorPos(ImVec2(150, 200));
+				if (ImGui::Button("Add Keybind", ImVec2(400, 40))) {
+					showPopup = true;
+				}
+
+				// Display the key selection popup
+				if (showPopup) {
+					ImGui::OpenPopup("Select Keybind");
+				}
+
+				if (ImGui::BeginPopupModal("Select Keybind", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+					ImGui::Text("Select a key to bind:");
+
+					// List of key options
+					const char* keys[] = { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
+										  "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z" };
+					const char* mouseButtons[] = { "Left Click", "Right Click" };
+
+					// Create a table with 3 columns
+					if (ImGui::BeginTable("KeyTable", 10)) {
+						for (int i = 0; i < IM_ARRAYSIZE(keys); i++) {
+							ImGui::TableNextColumn();
+							if (ImGui::Selectable(keys[i])) {
+								selectedKeybind = keys[i];
+								CustomMacros::keyCommands.push_back(selectedKeybind);
+								CustomMacros::timeBetweenCommands.push_back(CustomMacros::currentDelay);
+								showPopup = false;
+								ImGui::CloseCurrentPopup();
+							}
+						}
+						ImGui::EndTable();
+					}
+
+					ImGui::Separator();
+					ImGui::Text("Mouse Buttons:");
+					for (int i = 0; i < IM_ARRAYSIZE(mouseButtons); i++) {
+						if (ImGui::Selectable(mouseButtons[i])) {
+							selectedKeybind = mouseButtons[i];
+							CustomMacros::keyCommands.push_back(selectedKeybind);
+							CustomMacros::timeBetweenCommands.push_back(CustomMacros::currentDelay);
+							showPopup = false;
+							ImGui::CloseCurrentPopup();
+						}
+					}
+
+					if (ImGui::Button("Cancel")) {
+						showPopup = false;
+						ImGui::CloseCurrentPopup();
+					}
+
+					ImGui::EndPopup();
+				}
+
+				// Add a slider for the delay
+				ImGui::SetCursorPos(ImVec2(185, 250));
+				ImGui::SliderInt("Delay ms", &CustomMacros::currentDelay, 1, 100);
+
+				// Add a separator for a cleaner look
+				ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
+				ImGui::Spacing();
+
+				ImGuiStyle& style = ImGui::GetStyle();
+				float oldWindowRounding = style.WindowRounding;
+				float oldChildRounding = style.ChildRounding;
+				ImVec4 oldBorderColor = style.Colors[ImGuiCol_Border];
+				float oldBorderSize = style.WindowBorderSize;
+
+				// Adjust the style for the child window
+				style.WindowRounding = 5.0f; // Adjust rounding of the corners
+				style.ChildRounding = 5.0f;
+				style.Colors[ImGuiCol_Border] = ImVec4(0.85f, 0.85f, 0.78f, 0.7f); // Bone white border color
+				style.WindowBorderSize = 1.0f; // Set the border size
+
+				ImGui::SetCursorPos(ImVec2(150, 290));
+				ImGui::BeginChild("macroKeys", ImVec2(400, 320), true);
+
+				for (size_t i = 0; i < CustomMacros::keyCommands.size(); i++) {
+					std::string& entry = CustomMacros::keyCommands[i];
+					int delay = CustomMacros::timeBetweenCommands[i];
+
+					// Unique ID for each entry
+					ImGui::PushID(static_cast<int>(i));
+
+					if (ImGui::Button(entry.c_str())) {
+						// Button action (if any)
+					}
+
+					ImGui::SameLine();
+					ImGui::Text("Delay: %d ms", delay);
+
+					ImGui::SameLine();
+
+					// Ensure each "Delete" button has a unique ID within the loop
+					if (ImGui::Button("Delete")) {
+						// Remove the entry and its delay
+						CustomMacros::keyCommands.erase(CustomMacros::keyCommands.begin() + i);
+						CustomMacros::timeBetweenCommands.erase(CustomMacros::timeBetweenCommands.begin() + i);
+					}
+
+					ImGui::Separator();
+
+					// Pop the ID after the buttons for this entry
+					ImGui::PopID();
+				}
+
+				ImGui::EndChild();
+
+				style.WindowRounding = oldWindowRounding;
+				style.ChildRounding = oldChildRounding;
+				style.Colors[ImGuiCol_Border] = oldBorderColor;
+				style.WindowBorderSize = oldBorderSize;
+				ImGui::EndTabItem();
 			}
+	
 			ImGui::EndTabBar();
 
 		}
