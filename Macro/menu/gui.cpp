@@ -657,7 +657,7 @@ void gui::Render() noexcept
 	}*/
 	CheckInputs::Run();
 	if (Globals::efficentMode == false) {
-		if (!CustomMacros::runKeybind.empty() && IsKeyPressed(CustomMacros::runKeybind[0])) {
+		if (!CustomMacros::runKeybind.empty() && GetAsyncKeyState(CustomMacros::runKeybind[0])) {
 			CustomMacros::Run();
 		}
 		Misc::Run();
