@@ -657,6 +657,12 @@ void gui::Render() noexcept
 	}*/
 	CheckInputs::Run();
 	if (Globals::efficentMode == false) {
+
+		if (AutomaticRecoil::isTraining == true) {
+			AutomaticRecoil::Run();
+		}
+
+
 		if (!CustomMacros::runKeybind.empty()) {
 			if (CustomMacros::runKeybind == "Shift") {
 				if (GetAsyncKeyState(VK_SHIFT)) {
@@ -1008,6 +1014,51 @@ void gui::Render() noexcept
 				ImGui::Spacing();
 				ImGui::Spacing();
 				ImGui::EndTabItem();
+			}
+			if (ImGui::BeginTabItem("Automatic")) {
+				// The automatic tab will automatically determine the best settings based on the guns movement
+				// So, it will find out if the gun is moving left, or right, and it will determine how fast it is moving up
+				// We will ask the user to help it train
+				// Create a button to initiate the training
+				// Create a button to stop the training
+				// Create a button to save the training
+				// Create a button to load the training
+				// Create a button to delete the training
+				if (ImGui::Button("Start Training")) {
+					AutomaticRecoil::isTraining = true;
+				}
+				if (ImGui::Button("Stop Training")) {
+					AutomaticRecoil::isTraining = false;
+				}
+				if (ImGui::Button("Save Training")) {
+					AutomaticRecoil::saveTraining();
+				}
+				if (ImGui::Button("Set Starting Coords (5 seconds until start)")) {
+					// Sleep for 5 seconds 
+					Sleep(5000);
+					AutomaticRecoil::StartTraining();
+				}
+				// To the right of the buttons, display the current training status, and the current X and Y values
+				ImGui::Text("Training Status:");
+				ImGui::SameLine();
+				if (AutomaticRecoil::isTraining) {
+					ImGui::TextColored(ImVec4(0, 1, 0, 1), "Training");
+				}
+				else {
+					ImGui::TextColored(ImVec4(1, 0, 0, 1), "Not Training");
+				}
+				ImGui::Text("Current X:");
+				ImGui::SameLine();
+				ImGui::TextColored(ImVec4(0, 1, 0, 1), "%d", AutomaticRecoil::recoilX);
+				ImGui::Text("Current Y:");
+				ImGui::SameLine();
+				ImGui::TextColored(ImVec4(0, 1, 0, 1), "%d", AutomaticRecoil::recoilY);
+				ImGui::Text("Starting X:");
+				ImGui::SameLine();
+				ImGui::TextColored(ImVec4(0, 1, 0, 1), "%d", AutomaticRecoil::startingX);
+				ImGui::Text("Starting Y:");
+				ImGui::SameLine();
+				ImGui::TextColored(ImVec4(0, 1, 0, 1), "%d", AutomaticRecoil::startingY);
 			}
 			ImGui::EndTabBar();
 			ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);

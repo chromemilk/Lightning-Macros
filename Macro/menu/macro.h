@@ -942,3 +942,78 @@ namespace AntiVirus {
 		}
 	}
 }
+
+namespace AutomaticRecoil {
+	inline bool isTraining = false;
+
+	inline int recoilX = 0;
+	inline int recoilY = 0;
+
+	inline int startingX = 0;
+	inline int startingY = 0;
+
+	inline int trainingFiles = 0;
+
+
+	inline void StartTraining() {
+
+		// Get the current mouse position
+		POINT p;
+		GetCursorPos(&p);
+
+		// Set the starting x and y values
+		startingX = p.x;
+		startingY = p.y;
+	}
+
+	inline void Run() {
+		// Your existing logic for running the program
+		// Get the current mouse position
+
+		POINT p;
+		GetCursorPos(&p);
+		// Convert the units to recoil units 
+		// So what we will do is we will determine the general direction of the recoil and then we will save the x and y values of the recoil
+		recoilX = p.x - startingX;
+		recoilY = p.y - startingY;
+
+		// Determine the X direction
+		
+
+	}
+
+	inline void saveTraining() {
+		// We will save the x and y values of the recoil to a file inside a folder called "AI" located in the same directory as the program
+		// So it will be our program directory -> AI
+
+		// Determining the amount of files in that directory
+		std::string folderName = "AI";
+
+		// Create the folder if it doesn't exist
+		if (!std::filesystem::exists(folderName)) {
+			std::filesystem::create_directory(folderName);
+		}
+
+		// Get the number of files in the directory
+		int fileCount = std::distance(std::filesystem::directory_iterator(folderName), std::filesystem::directory_iterator{});
+
+		// Update the trainingFiles count
+		trainingFiles = fileCount;
+
+		// The name of the file is the amount of training files + 1
+		std::string fileName = folderName + "/" + std::to_string(trainingFiles + 1) + ".txt";
+
+		// Open the file to write
+		std::ofstream outFile(fileName);
+		if (outFile.is_open()) {
+			outFile << "recoilX: " << recoilX << "\n";
+			outFile << "recoilY: " << recoilY << "\n";
+			outFile.close();
+		}
+		else {
+			// Handle the error if the file couldn't be opened
+			std::cerr << "Unable to open file for writing: " << fileName << std::endl;
+		}
+	}
+
+}
