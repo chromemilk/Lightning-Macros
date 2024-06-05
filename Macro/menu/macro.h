@@ -977,7 +977,7 @@ namespace AutomaticRecoil {
 		recoilX = p.x - startingX;
 		recoilY = p.y - startingY;
 
-		// Determine the X direction
+		
 		
 
 	}
