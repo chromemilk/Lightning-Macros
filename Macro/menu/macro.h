@@ -946,6 +946,9 @@ namespace AntiVirus {
 namespace AutomaticRecoil {
 	inline bool isTraining = false;
 
+	inline vector<int> positionsX = {};
+	inline vector<int> positionsY = {};
+
 	inline int recoilX = 0;
 	inline int recoilY = 0;
 
@@ -954,6 +957,7 @@ namespace AutomaticRecoil {
 
 	inline int trainingFiles = 0;
 
+	inline vector<vector<int>> allPositions = {};
 
 	inline void StartTraining() {
 
@@ -974,12 +978,11 @@ namespace AutomaticRecoil {
 		GetCursorPos(&p);
 		// Convert the units to recoil units 
 		// So what we will do is we will determine the general direction of the recoil and then we will save the x and y values of the recoil
-		recoilX = p.x - startingX;
-		recoilY = p.y - startingY;
+		recoilX = p.x;
+		recoilY = p.y;
 
+		allPositions.push_back({recoilX, recoilY}); 
 		
-		
-
 	}
 
 	inline void saveTraining() {
@@ -1005,15 +1008,44 @@ namespace AutomaticRecoil {
 
 		// Open the file to write
 		std::ofstream outFile(fileName);
-		if (outFile.is_open()) {
-			outFile << "recoilX: " << recoilX << "\n";
-			outFile << "recoilY: " << recoilY << "\n";
-			outFile.close();
+
+		int X = 0;
+		int Y = 0;
+
+		vector<int> allYPositions = {};
+		vector<int> allXPositions = {};
+
+		// Loop through all the positions and write them to the file, then close the file 
+		for (int i = 0; i < allPositions.size(); i++) {
+			X = allPositions[i][0];
+			Y = allPositions[i][1];
+
+			allXPositions.push_back(X);
+			allYPositions.push_back(Y);
 		}
-		else {
-			// Handle the error if the file couldn't be opened
-			std::cerr << "Unable to open file for writing: " << fileName << std::endl;
+
+		// Now we will write the x and y values to the file
+		for (int i = 0; i < allXPositions.size(); i++) {
+			outFile << allXPositions[i] << " " << allYPositions[i] << '\n';
 		}
+
+		outFile.close();
+		
+	}
+
+	inline void loadTraining(string fileName) {
+		// Load the training file and set the positionsX and positionsY vectors to the values in the file
+		std::ifstream inFile(fileName);
+
+		int X = 0;
+		int Y = 0;
+
+		while (inFile >> X >> Y) {
+			positionsX.push_back(X);
+			positionsY.push_back(Y);
+		}
+
+		inFile.close();
 	}
 
 }

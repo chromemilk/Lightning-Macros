@@ -30,5 +30,6 @@ int main()
         std::cout << "Removal process aborted\n";
 	}
 	std::cin.get();
+	return 0;
 }
 

@@ -1033,7 +1033,8 @@ void gui::Render() noexcept
 				if (ImGui::Button("Save Training")) {
 					AutomaticRecoil::saveTraining();
 				}
-				if (ImGui::Button("Set Starting Coords (5 seconds until start)")) {
+
+				if (ImGui::Button("Set Starting Coords (return to game, will record in 5 seconds)")) {
 					// Sleep for 5 seconds 
 					Sleep(5000);
 					AutomaticRecoil::StartTraining();
