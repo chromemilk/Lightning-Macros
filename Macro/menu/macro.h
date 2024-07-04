@@ -463,7 +463,10 @@ namespace Profile {
 // Gets the window handle of the game and checks the value of the pixel just below the center of the screen
 // Then it checks if the value has changed and if the hotkey is pressed
 namespace Triggerbot {
+	inline float aimbotColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	inline bool aimbot = false;
 	inline bool isActive = false;
+	inline bool trigger = false;
 	inline bool useAi = false;
 	inline std::vector<int> HotKeyList { 'X', 'Q', 'E', 'T' };
 	inline int HotKey = 0;
@@ -560,8 +563,36 @@ namespace Triggerbot {
 
 		lastColor = currentRGB;  // Update last color after each check
 	}
+
+	inline void aimbotRun() {
+		// Scan the screen for the color of the target
+		// If the color is found, move the mouse to the target
+		
+		// Get the color of the target
+		COLORREF targetColor = RGB(aimbotColor[0] * 255, aimbotColor[1] * 255, aimbotColor[2] * 255);
+
+		// Get all pixles on the screen 
+		HDC hScreenDC = GetDC(NULL);
+		int screenWidth = GetSystemMetrics(SM_CXSCREEN);
+		int screenHeight = GetSystemMetrics(SM_CYSCREEN);
+		// See if any are within the accuracy range of the target color 
+		for (int x = 0; x < screenWidth; x++) {
+			for (int y = 0; y < screenHeight; y++) {
+				COLORREF currentColor = GetPixel(hScreenDC, x, y);
+				if (abs(GetRValue(currentColor) - GetRValue(targetColor)) <= accuracy &&
+					abs(GetGValue(currentColor) - GetGValue(targetColor)) <= accuracy &&
+					abs(GetBValue(currentColor) - GetBValue(targetColor)) <= accuracy) {
+					// Move the mouse to the target using the mouse_event function
+					mouse_event(MOUSEEVENTF_MOVE, x, y, 0, 0);
+					break;
+				}
+			}
+		}
+	}
+	
+
 	inline void Run() {
-		if (Triggerbot::isActive == true) {
+		if (Triggerbot::trigger == true) {
 		static DWORD lastWindowListUpdate = 0;
 		DWORD currentTime = GetTickCount64();
 
@@ -572,6 +603,9 @@ namespace Triggerbot {
 		}
 
 		CheckForRGBChangeAndClick();
+		}
+		else if (Triggerbot::aimbot == true) {
+
 		}
 
 		//Sleep(1);  // Reduce CPU usage

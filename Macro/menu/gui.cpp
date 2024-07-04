@@ -1668,6 +1668,12 @@ void gui::Render() noexcept
 			ImGui::SetCursorPos(ImVec2(gui::WIDTH / 2.8, 60));
 			ImGui::Text("           === PixelBot ===");
 			CustomCheckbox("Enable", &Triggerbot::isActive);
+			CustomCheckbox("Aimbot Enable", &Triggerbot::aimbot);
+			CustomCheckbox("Pixel Change Triggerbot", &Triggerbot::trigger);
+			if (Triggerbot::aimbot == true) {
+				// Aimbot color selector 
+				ImGui::ColorEdit4("Aimbot Color", (float*)&Triggerbot::aimbotColor, ImGuiColorEditFlags_NoInputs);
+			}
 			if (Triggerbot::isActive == true) {
 				CustomCheckbox("Smart Pixel Detection", &Triggerbot::useAi);
 				ImGui::SliderInt("Accuracy", &Triggerbot::accuracy, 1, 25);
@@ -1685,13 +1691,24 @@ void gui::Render() noexcept
 				ImGui::Text("Last RGB:");
 				ImGui::SameLine();
 				ImGui::TextColored(ImVec4(0, 1, 0, 1), "%d, %d, %d", Triggerbot::lastRGBL[0], Triggerbot::lastRGBL[1], Triggerbot::lastRGBL[2]);
-				if (Triggerbot::isActive == true) {
+				if (Triggerbot::trigger == true) {
 				ImGui::Text("Triggerbot:");
 				ImGui::SameLine();
 				ImGui::TextColored(ImVec4(0, 1, 0, 1), "Active");
 				}
 				else {
 					ImGui::Text("Triggerbot:");
+					ImGui::SameLine();
+					ImGui::TextColored(ImVec4(1, 0, 0, 1), "Not Active");
+				}
+
+				if (Triggerbot::aimbot == true) {
+					ImGui::Text("Aimbot:");
+					ImGui::SameLine();
+					ImGui::TextColored(ImVec4(0, 1, 0, 1), "Active");
+				}
+				else {
+					ImGui::Text("Aimbot:");
 					ImGui::SameLine();
 					ImGui::TextColored(ImVec4(1, 0, 0, 1), "Not Active");
 				}
