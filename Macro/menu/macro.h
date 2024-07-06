@@ -532,6 +532,47 @@ namespace Triggerbot {
 		return colorRef;
 	}
 
+
+	POINT FindTargetColor() {
+		HDC hWindowDC = GetDC(NULL);  // Get DC for the entire screen
+
+		RECT rect;
+
+
+		// Boundary check
+		int screenX = GetSystemMetrics(SM_CXSCREEN);
+		int screenY = GetSystemMetrics(SM_CYSCREEN);
+
+
+		GetClientRect(targetWindowHandle, &rect);
+		ClientToScreen(targetWindowHandle, (POINT*)&rect.left);  // Convert to screen coordinates
+		ClientToScreen(targetWindowHandle, (POINT*)&rect.right); // Convert to screen coordinates
+
+		// Scan every pixel and check if it matches the target color within the accuracy range, if it is true, return the coordinates
+		for (int x = rect.left; x < rect.right; x++) {
+			for (int y = rect.top; y < rect.bottom; y++) {
+				if (x < 0 || x >= screenX || y < 0 || y >= screenY) {
+					continue; // Skip out-of-bounds pixels
+				}
+
+				COLORREF colorRef = GetPixel(hWindowDC, x, y);
+				int r = GetRValue(colorRef);
+				int g = GetGValue(colorRef);
+				int b = GetBValue(colorRef);
+
+				if (abs(r - aimbotColor[0] * 255) <= accuracy &&
+					abs(g - aimbotColor[1] * 255) <= accuracy &&
+					abs(b - aimbotColor[2] * 255) <= accuracy) {
+					ReleaseDC(NULL, hWindowDC);
+					return { x, y };
+				}
+			}
+		}
+
+		ReleaseDC(NULL, hWindowDC);
+		return { 0, 0 };
+	}
+
 	inline bool IsHotkeyPressed() {
 		return (GetAsyncKeyState(Triggerbot::HotKey) & 0x8000) != 0;
 	}
@@ -565,47 +606,36 @@ namespace Triggerbot {
 	}
 
 	inline void aimbotRun() {
-		// Scan the screen for the color of the target
-		// If the color is found, move the mouse to the target
-		
 		// Get the color of the target
 		COLORREF targetColor = RGB(aimbotColor[0] * 255, aimbotColor[1] * 255, aimbotColor[2] * 255);
-
-		// Get all pixles on the screen 
-		HDC hScreenDC = GetDC(NULL);
-		int screenWidth = GetSystemMetrics(SM_CXSCREEN);
-		int screenHeight = GetSystemMetrics(SM_CYSCREEN);
-		// See if any are within the accuracy range of the target color 
-		for (int x = 0; x < screenWidth; x++) {
-			for (int y = 0; y < screenHeight; y++) {
-				COLORREF currentColor = GetPixel(hScreenDC, x, y);
-				if (abs(GetRValue(currentColor) - GetRValue(targetColor)) <= accuracy &&
-					abs(GetGValue(currentColor) - GetGValue(targetColor)) <= accuracy &&
-					abs(GetBValue(currentColor) - GetBValue(targetColor)) <= accuracy) {
-					// Move the mouse to the target using the mouse_event function
-					mouse_event(MOUSEEVENTF_MOVE, x, y, 0, 0);
-					break;
-				}
-			}
+		// Scan
+		POINT target = FindTargetColor();
+		// If the target is found, move the mouse to the target
+		if (target.x != 0 && target.y != 0) {
+			SetCursorPos(target.x, target.y);
 		}
 	}
 	
 
 	inline void Run() {
-		if (Triggerbot::trigger == true) {
-		static DWORD lastWindowListUpdate = 0;
-		DWORD currentTime = GetTickCount64();
 
-		// Update the window list every 10 seconds (10000 milliseconds) instead of every iteration
-		if (currentTime - lastWindowListUpdate > 10000) {
-			UpdateWindowList();
-			lastWindowListUpdate = currentTime;
+		if (Triggerbot::isActive == true) {
+			static DWORD lastWindowListUpdate = 0;
+			DWORD currentTime = GetTickCount64();
+
+			// Update the window list every 10 seconds (10000 milliseconds) instead of every iteration
+			if (currentTime - lastWindowListUpdate > 10000) {
+				UpdateWindowList();
+				lastWindowListUpdate = currentTime;
+			}
+
 		}
 
+		if (Triggerbot::trigger == true) {
 		CheckForRGBChangeAndClick();
 		}
 		else if (Triggerbot::aimbot == true) {
-
+			aimbotRun();
 		}
 
 		//Sleep(1);  // Reduce CPU usage
