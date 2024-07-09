@@ -283,6 +283,23 @@ void gui::EndRender() noexcept
 	ImGui::End();
 }*/
 
+void overlay_manager()
+{
+	float ScreenX = GetSystemMetrics(SM_CXSCREEN);
+	float ScreenY = GetSystemMetrics(SM_CYSCREEN);
+	ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Once);
+	ImGui::SetNextWindowSize(ImVec2(ScreenX, ScreenY));
+	ImGui::Begin("#overlay", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoCollapse |
+		ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoMouseInputs);
+	auto draw = ImGui::GetBackgroundDrawList();
+	if (true)
+	{
+		draw->AddCircle(ImVec2(ScreenX / 2, ScreenY / 2), 30, IM_COL32(255, 0, 0, 255), 100, 1.0f);
+	}
+	ImGui::End();
+}
+
+
 bool CustomCheckbox(const char* label, bool* v)
 {
 	ImGuiWindow* window = ImGui::GetCurrentWindow();
@@ -423,6 +440,7 @@ void gui::Render() noexcept
 	style.ChildRounding = 3;
 	*/
 
+	
 
 	auto& style = ImGui::GetStyle();
 
