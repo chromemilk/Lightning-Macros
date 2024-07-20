@@ -302,7 +302,7 @@ void overlay_manager()
 
 bool CustomCheckbox(const char* label, bool* v)
 {
-	ImGuiWindow* window = ImGui::GetCurrentWindow();
+	/**/ImGuiWindow *window = ImGui::GetCurrentWindow();
 	if (window->SkipItems)
 		return false;
 

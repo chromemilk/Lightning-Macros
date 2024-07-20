@@ -391,16 +391,38 @@ namespace BuildType {
 
 
 namespace MovePlayer {
+	
+	inline void simulateKeyPress( WORD key ) {
+		INPUT input;
+		input.type = INPUT_KEYBOARD;
+		input.ki.wVk = key;
+		input.ki.wScan = 0;
+		input.ki.dwFlags = 0; // Key down
+		input.ki.time = 0;
+		input.ki.dwExtraInfo = 0;
+
+		SendInput( 1, &input, sizeof( INPUT ) ); // Send key down
+
+		Sleep( 100 ); // Short delay
+
+		input.ki.dwFlags = KEYEVENTF_KEYUP; // Key up
+		SendInput( 1, &input, sizeof( INPUT ) ); // Send key upsw
+	}
+
 	inline void Run() {
 		// Moving the player back and forth to prevent the player from being kicked for being afk
 		if (Globals::antiAfk == true) {
-			keybd_event('W', 0, 0, 0); // Key down
-			Sleep(10);                // Short delay
-			keybd_event('W', 0, KEYEVENTF_KEYUP, 0); // Key up
-			Sleep(10);
-			keybd_event('S', 0, 0, 0); // Key down
-			Sleep(10);                // Short delay
-			keybd_event('S', 0, KEYEVENTF_KEYUP, 0); // Key up
+			simulateKeyPress( 0x57 ); // 'W' key
+			Sleep( 100 ); // Wait 5 seconds
+
+			simulateKeyPress( 0x53 ); // 'S' key
+			Sleep( 100 ); // Wait 5 seconds
+
+			simulateKeyPress( 0x57 ); // 'W' key
+			Sleep( 100 ); // Wait 5 seconds
+
+			simulateKeyPress( 0x53 ); // 'S' key
+			Sleep( 100 ); // Wait 5 seconds
 		}
 	}
 }
