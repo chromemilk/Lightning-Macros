@@ -300,9 +300,9 @@ void overlay_manager()
 }
 
 
-bool CustomCheckbox(const char* label, bool* v)
+bool CustomCheckbox(const char *label, bool *v)
 {
-	/**/ImGuiWindow *window = ImGui::GetCurrentWindow();
+	/*ImGuiWindow *window = ImGui::GetCurrentWindow();
 	if (window->SkipItems)
 		return false;
 
@@ -346,8 +346,180 @@ bool CustomCheckbox(const char* label, bool* v)
 		ImGui::RenderText(ImVec2(CustomCheckbox_bb.Max.x + style.ItemInnerSpacing.x, CustomCheckbox_bb.Min.y + style.FramePadding.y), label);
 	}
 
+	return pressed;*/
+
+	ImGuiWindow *window = ImGui::GetCurrentWindow();
+	if (window->SkipItems)
+		return false;
+
+	ImGuiContext &g = *GImGui;
+	const ImGuiStyle &style = g.Style;
+	const ImGuiID id = window->GetID( label );
+	const ImVec2 label_size = ImGui::CalcTextSize( label, NULL, true );
+
+	const float button_sz = ImGui::GetFrameHeight();  // Height of the toggle button
+	const float knob_radius = button_sz * 0.45f;      // Radius of the knob
+	const ImVec2 pos = window->DC.CursorPos;
+
+	// Toggle button definition
+	const ImVec2 toggle_pos = pos;
+	const ImRect toggle_bb( toggle_pos, ImVec2( toggle_pos.x + button_sz * 2, toggle_pos.y + button_sz ) );
+
+	ImGui::ItemSize( toggle_bb, style.FramePadding.y );
+	if (!ImGui::ItemAdd( toggle_bb, id ))
+		return false;
+
+	bool hovered, held;
+	bool pressed = ImGui::ButtonBehavior( toggle_bb, id, &hovered, &held );
+	if (pressed)
+		*v = !(*v);
+
+	// Render the toggle button background with matching corner rounding
+	const ImU32 bg_col = ImGui::GetColorU32( *v ? ImGuiCol_ButtonActive : ImGuiCol_FrameBg );
+	window->DrawList->AddRectFilled( toggle_bb.Min, toggle_bb.Max, bg_col, knob_radius );
+
+	// Render the toggle button knob
+	ImVec2 knob_center = ImVec2(
+		*v ? (toggle_bb.Max.x - knob_radius) : (toggle_bb.Min.x + knob_radius),
+		(toggle_bb.Min.y + toggle_bb.Max.y) * 0.5f
+	);
+	window->DrawList->AddCircleFilled( knob_center, knob_radius, ImGui::GetColorU32( ImGuiCol_SliderGrab ) );
+
+	// Render the label next to the toggle button
+	if (label_size.x > 0.0f)
+	{
+		ImGui::RenderText( ImVec2( toggle_bb.Max.x + style.ItemInnerSpacing.x, toggle_bb.Min.y + style.FramePadding.y ), label );
+	}
+
+	return pressed;
+	
+
+} 
+
+bool CustomRectangleButton( const char *label, const ImVec2 &size ) {
+	ImGuiWindow *window = ImGui::GetCurrentWindow();
+	if (window->SkipItems)
+		return false;
+
+	ImGuiContext &g = *GImGui;
+	const ImGuiStyle &style = g.Style;
+	const ImGuiID id = window->GetID( label );
+	const ImVec2 label_size = ImGui::CalcTextSize( label, NULL, true );
+
+	// Define the size and position of the button
+	const ImVec2 pos = window->DC.CursorPos;
+	const ImRect button_bb( pos, ImVec2( pos.x + size.x, pos.y + size.y ) );
+
+	// Reserve space for the button
+	ImGui::ItemSize( button_bb, style.FramePadding.y );
+	if (!ImGui::ItemAdd( button_bb, id ))
+		return false;
+
+	bool hovered, held;
+	bool pressed = ImGui::ButtonBehavior( button_bb, id, &hovered, &held );
+
+	// Render the button with a green outline on the left side only
+	const ImU32 button_col = ImGui::GetColorU32( hovered ? ImGuiCol_ButtonHovered : ImGuiCol_Button );
+	window->DrawList->AddRectFilled( button_bb.Min, button_bb.Max, button_col, 0.f );
+
+	// Green outline on the left side
+	 ImU32 outline_col;
+	if (Colors::customColors == true)
+	{
+		outline_col = IM_COL32((ImU32)Colors::accentColor[0], (ImU32)Colors::accentColor[1], (ImU32)Colors::accentColor[2], (ImU32)Colors::accentColor[3]);
+	}
+	else { 
+		outline_col = IM_COL32( 0, 255, 0, 255 );
+	}
+	
+	window->DrawList->AddLine( button_bb.Min, ImVec2( button_bb.Min.x, button_bb.Max.y ), outline_col, 2.0f );
+
+	// Render the label inside the button
+	ImVec2 text_pos = ImVec2( button_bb.Min.x + style.FramePadding.x + 5, button_bb.Min.y + (size.y - label_size.y) * 0.5f );
+	ImGui::RenderText( text_pos, label );
+
 	return pressed;
 }
+
+
+bool CustomSliderFloat( const char *label, float *v, float v_min, float v_max, const char *format = "%.3f", float power = 1.0f ) {
+	ImGuiContext &g = *GImGui;
+	ImGuiWindow *window = ImGui::GetCurrentWindow();
+	if (window->SkipItems)
+		return false;
+
+	// Set custom style for slider
+	ImGuiStyle &style = ImGui::GetStyle();
+	ImVec4 saved_colors[ 2 ] = {
+		style.Colors[ ImGuiCol_FrameBg ],
+		style.Colors[ ImGuiCol_SliderGrab ]
+	};
+
+	// Customize colors (adjust these as needed)
+	style.Colors[ ImGuiCol_FrameBg ] = ImVec4( 0.2f, 0.2f, 0.2f, 1.0f );       // Background color
+	style.Colors[ ImGuiCol_SliderGrab ] = ImVec4( 0.0f, 0.5f, 1.0f, 1.0f );    // Knob color
+
+	// Set custom rounding and sizes
+	float original_frame_padding = style.FramePadding.y;
+	float original_grab_min_size = style.GrabMinSize;
+	style.FramePadding.y = 2.0f;
+	style.GrabMinSize = 10.0f;
+
+	// Render slider
+	bool value_changed = ImGui::SliderFloat( label, v, v_min, v_max, format, power );
+
+	// Restore the style
+	style.Colors[ ImGuiCol_FrameBg ] = saved_colors[ 0 ];
+	style.Colors[ ImGuiCol_SliderGrab ] = saved_colors[ 1 ];
+	style.FramePadding.y = original_frame_padding;
+	style.GrabMinSize = original_grab_min_size;
+
+	return value_changed;
+}
+
+
+bool CustomSliderInt( const char *label, int *v, int v_min, int v_max, const char *format = "%d" ) {
+	ImGuiContext &g = *GImGui;
+	ImGuiWindow *window = ImGui::GetCurrentWindow();
+	if (window->SkipItems)
+		return false;
+
+	// Backup ImGui style variables
+	ImGuiStyle &style = ImGui::GetStyle();
+	ImVec4 saved_colors[ 2 ] = {
+		style.Colors[ ImGuiCol_FrameBg ],
+		style.Colors[ ImGuiCol_SliderGrab ]
+	};
+
+	// Customize colors and other styles
+	style.Colors[ ImGuiCol_FrameBg ] = ImVec4( 0.2f, 0.2f, 0.2f, 1.0f );       // Track color
+	style.Colors[ ImGuiCol_SliderGrab ] = ImVec4( 0.0f, 0.5f, 1.0f, 1.0f );    // Knob color
+
+	// Customize size and rounding if needed
+	float original_frame_padding = style.FramePadding.y;
+	float original_grab_min_size = style.GrabMinSize;
+	style.FramePadding.y = 2.0f;  // Smaller vertical padding
+	style.GrabMinSize = 10.0f;    // Minimum size of the grab
+
+	// Render the slider
+	bool value_changed = ImGui::SliderInt( label, v, v_min, v_max, format );
+
+	// Draw the value near the slider for better alignment
+	ImVec2 slider_pos = ImGui::GetItemRectMin();
+	ImVec2 slider_size = ImGui::GetItemRectSize();
+	ImGui::RenderText( ImVec2( slider_pos.x + slider_size.x + style.ItemInnerSpacing.x, slider_pos.y ), label );
+
+	// Restore style variables
+	style.Colors[ ImGuiCol_FrameBg ] = saved_colors[ 0 ];
+	style.Colors[ ImGuiCol_SliderGrab ] = saved_colors[ 1 ];
+	style.FramePadding.y = original_frame_padding;
+	style.GrabMinSize = original_grab_min_size;
+
+	return value_changed;
+}
+
+
+
 
 bool IsKeyPressed(char key) {
 	return (GetAsyncKeyState(static_cast<int>(VkKeyScan(key))) & 0x8000) != 0;
@@ -820,7 +992,7 @@ void gui::Render() noexcept
 
 	ImGui::Spacing();
 	if (BuildType::basic == true) {
-		if (ImGui::Button("Recoil Assist", ImVec2(100, 40))) {
+		if (CustomRectangleButton("Recoil", ImVec2(100, 40))) {
 			Globals::ActiveTab = 1;
 		}
 		ImGui::Spacing();
@@ -828,7 +1000,7 @@ void gui::Render() noexcept
 	}
 
 	if (BuildType::basic == true) {
-		if (ImGui::Button("Crosshair", ImVec2(100, 40))) {
+		if (CustomRectangleButton("Crosshair", ImVec2(100, 40))) {
 			Globals::ActiveTab = 3;
 		}
 		ImGui::Spacing();
@@ -836,7 +1008,7 @@ void gui::Render() noexcept
 	}
 
 	if (BuildType::advanced == true) {
-		if (ImGui::Button("Macros (WIP)", ImVec2(100, 40))) {
+		if (CustomRectangleButton("Macros (WIP)", ImVec2(100, 40))) {
 			Globals::ActiveTab = 2;
 		}
 		ImGui::Spacing();
@@ -846,7 +1018,7 @@ void gui::Render() noexcept
 
 
 	if (BuildType::premium == true) {
-		if (ImGui::Button("Overlay", ImVec2(100, 40))) {
+		if (CustomRectangleButton("Overlay", ImVec2(100, 40))) {
 			Globals::ActiveTab = 4;
 		}
 		if (ImGui::IsItemHovered()) {
@@ -864,7 +1036,7 @@ void gui::Render() noexcept
 	}
 
 	if (BuildType::advanced == true) {
-		if (ImGui::Button("Aim-Assist", ImVec2(100, 40))) {
+		if (CustomRectangleButton("Aim-Assist", ImVec2(100, 40))) {
 			Globals::ActiveTab = 5;
 		}
 		ImGui::Spacing();
@@ -872,12 +1044,12 @@ void gui::Render() noexcept
 	}
 
 	if (BuildType::premium == true) {
-		if (ImGui::Button("Gun Profiles", ImVec2(100, 40))) {
+		if (CustomRectangleButton("Gun Profiles", ImVec2(100, 40))) {
 			Globals::ActiveTab = 7;
 		}
 		ImGui::Spacing();
 		ImGui::Spacing();
-		if (ImGui::Button("PixelBot", ImVec2(100, 40))) {
+		if (CustomRectangleButton("PixelBot", ImVec2(100, 40))) {
 			Globals::ActiveTab = 8;
 		}
 		if (ImGui::IsItemHovered()) {
@@ -892,21 +1064,21 @@ void gui::Render() noexcept
 		}
 		ImGui::Spacing();
 		ImGui::Spacing();
-		if (ImGui::Button("Help", ImVec2(100, 40))) {
+		if (CustomRectangleButton("Help", ImVec2(100, 40))) {
 			Globals::ActiveTab = 9;
 		}
 		ImGui::Spacing();
 		ImGui::Spacing();
 	}
 	if (BuildType::advanced == true) {
-		if (ImGui::Button("Misc", ImVec2(100, 40))) {
+		if (CustomRectangleButton("Misc", ImVec2(100, 40))) {
 			Globals::ActiveTab = 6;
 		}
 		ImGui::Spacing();
 		ImGui::Spacing();
 	}
 
-	if (ImGui::Button("Config", ImVec2(100, 40))) {
+	if (CustomRectangleButton("Config", ImVec2(100, 40))) {
 		Globals::ActiveTab = 10;
 	}
 
