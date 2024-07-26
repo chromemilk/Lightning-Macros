@@ -348,6 +348,7 @@ bool CustomCheckbox(const char *label, bool *v)
 
 	return pressed;*/
 
+	
 	ImGuiWindow *window = ImGui::GetCurrentWindow();
 	if (window->SkipItems)
 		return false;
@@ -374,25 +375,47 @@ bool CustomCheckbox(const char *label, bool *v)
 	if (pressed)
 		*v = !(*v);
 
+	static std::unordered_map<ImGuiID, float> animationProgress;
+	float &t = animationProgress[ id ];
+
+	if (pressed)
+		t = 0.0f; // Reset animation progress when the button is pressed
+
+	if (Animations::shouldAnimate)
+	{
+		const float animation_duration = 5.f; // Duration in seconds
+		const float delta_time = ImGui::GetIO().DeltaTime;
+		t += delta_time / animation_duration;
+		t = ImClamp( t, 0.0f, 1.0f ); // Ensure t stays within 0 to 1
+	}
+	else
+	{
+		// Instantly set the knob position without animation
+		t = *v ? 1.0f : 0.0f;
+	}
+
+	// Calculate knob position using interpolation
+	float knob_position = ImLerp(
+		!(*v) ? toggle_bb.Min.x + knob_radius : toggle_bb.Max.x - knob_radius,
+		*v ? toggle_bb.Max.x - knob_radius : toggle_bb.Min.x + knob_radius,
+		t
+	);
+
 	// Render the toggle button background with matching corner rounding
 	const ImU32 bg_col = ImGui::GetColorU32( *v ? ImGuiCol_ButtonActive : ImGuiCol_FrameBg );
 	window->DrawList->AddRectFilled( toggle_bb.Min, toggle_bb.Max, bg_col, knob_radius );
 
 	// Render the toggle button knob
-	ImVec2 knob_center = ImVec2(
-		*v ? (toggle_bb.Max.x - knob_radius) : (toggle_bb.Min.x + knob_radius),
-		(toggle_bb.Min.y + toggle_bb.Max.y) * 0.5f
-	);
+	ImVec2 knob_center = ImVec2( knob_position, (toggle_bb.Min.y + toggle_bb.Max.y) * 0.5f );
 	window->DrawList->AddCircleFilled( knob_center, knob_radius, ImGui::GetColorU32( ImGuiCol_SliderGrab ) );
 
 	// Render the label next to the toggle button
 	if (label_size.x > 0.0f)
 	{
-		ImGui::RenderText( ImVec2( toggle_bb.Max.x + style.ItemInnerSpacing.x, toggle_bb.Min.y + style.FramePadding.y ), label );
+		ImGui::RenderText( ImVec2( toggle_bb.Max.x + style.ItemInnerSpacing.x - 5, toggle_bb.Min.y + style.FramePadding.y ), label );
 	}
 
 	return pressed;
-	
 
 } 
 
@@ -1673,7 +1696,7 @@ void gui::Render() noexcept
 			ImGui::SetCursorPos(ImVec2(gui::WIDTH / 2.8, 60));
 			ImGui::Text("           === Misc ===");
 			CustomCheckbox("FPS Counter", &Misc::fpsCounter);
-			CustomCheckbox("Controller Support", &Controller::hasController);	
+			CustomCheckbox("Controller", &Controller::hasController);	
 			CustomCheckbox("Anti-Afk kick", &Globals::antiAfk);
 			ImGui::SetCursorPos(ImVec2(300, 77));
 			CustomCheckbox("Low Usage", &Globals::efficentMode);
@@ -1771,6 +1794,7 @@ void gui::Render() noexcept
 			}
 			ImGui::SameLine();
 			CustomCheckbox("Save on close", &Globals::saveOnClose);
+			CustomCheckbox( "Menu animations", &Animations::shouldAnimate );
 		}
 		if (Globals::ActiveTab == 7) {
 			ImGui::SetCursorPos(ImVec2(gui::WIDTH / 2.8, 60));
@@ -2049,7 +2073,7 @@ void gui::Render() noexcept
 
 			// Center the text 
 
-			ImGui::SetCursorPos(ImVec2((gui::WIDTH / 2) + 80, 570));
+			ImGui::SetCursorPos(ImVec2((gui::WIDTH / 2) + 90, 570));
 
 			ImGui::Text("Config Files:");
 			ImGui::SameLine();

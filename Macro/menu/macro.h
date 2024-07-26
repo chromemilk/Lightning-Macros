@@ -1135,3 +1135,9 @@ namespace AutomaticRecoil {
 	}
 
 }
+
+namespace Animations
+{
+	// This will be for things like the animations for the buttons
+	inline bool shouldAnimate = true;
+}
