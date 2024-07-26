@@ -456,6 +456,11 @@ bool CustomRectangleButton( const char *label, const ImVec2 &size ) {
 			(int)(Colors::accentColor[ 3 ] * 255.0f)
 		);
 	}
+	else if (Globals::styleChanged == true)
+	{
+		// Use the "purple" style for the outline
+		outline_col = IM_COL32( 113, 113, 255, 255 );
+	}
 	else { 
 		outline_col = IM_COL32( 0, 255, 0, 255 );
 	}
