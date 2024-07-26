@@ -468,88 +468,12 @@ bool CustomRectangleButton( const char *label, const ImVec2 &size ) {
 	window->DrawList->AddLine( button_bb.Min, ImVec2( button_bb.Min.x, button_bb.Max.y ), outline_col, 2.0f );
 
 	// Render the label inside the button
-	ImVec2 text_pos = ImVec2( button_bb.Min.x + style.FramePadding.x + 5, button_bb.Min.y + (size.y - label_size.y) * 0.5f );
+	ImVec2 text_pos = ImVec2( button_bb.Min.x + style.FramePadding.x + 6, button_bb.Min.y + (size.y - label_size.y) * 0.5f );
 	ImGui::RenderText( text_pos, label );
 
 	return pressed;
 }
 
-
-bool CustomSliderFloat( const char *label, float *v, float v_min, float v_max, const char *format = "%.3f", float power = 1.0f ) {
-	ImGuiContext &g = *GImGui;
-	ImGuiWindow *window = ImGui::GetCurrentWindow();
-	if (window->SkipItems)
-		return false;
-
-	// Set custom style for slider
-	ImGuiStyle &style = ImGui::GetStyle();
-	ImVec4 saved_colors[ 2 ] = {
-		style.Colors[ ImGuiCol_FrameBg ],
-		style.Colors[ ImGuiCol_SliderGrab ]
-	};
-
-	// Customize colors (adjust these as needed)
-	style.Colors[ ImGuiCol_FrameBg ] = ImVec4( 0.2f, 0.2f, 0.2f, 1.0f );       // Background color
-	style.Colors[ ImGuiCol_SliderGrab ] = ImVec4( 0.0f, 0.5f, 1.0f, 1.0f );    // Knob color
-
-	// Set custom rounding and sizes
-	float original_frame_padding = style.FramePadding.y;
-	float original_grab_min_size = style.GrabMinSize;
-	style.FramePadding.y = 2.0f;
-	style.GrabMinSize = 10.0f;
-
-	// Render slider
-	bool value_changed = ImGui::SliderFloat( label, v, v_min, v_max, format, power );
-
-	// Restore the style
-	style.Colors[ ImGuiCol_FrameBg ] = saved_colors[ 0 ];
-	style.Colors[ ImGuiCol_SliderGrab ] = saved_colors[ 1 ];
-	style.FramePadding.y = original_frame_padding;
-	style.GrabMinSize = original_grab_min_size;
-
-	return value_changed;
-}
-
-
-bool CustomSliderInt( const char *label, int *v, int v_min, int v_max, const char *format = "%d" ) {
-	ImGuiContext &g = *GImGui;
-	ImGuiWindow *window = ImGui::GetCurrentWindow();
-	if (window->SkipItems)
-		return false;
-
-	// Backup ImGui style variables
-	ImGuiStyle &style = ImGui::GetStyle();
-	ImVec4 saved_colors[ 2 ] = {
-		style.Colors[ ImGuiCol_FrameBg ],
-		style.Colors[ ImGuiCol_SliderGrab ]
-	};
-
-	// Customize colors and other styles
-	style.Colors[ ImGuiCol_FrameBg ] = ImVec4( 0.2f, 0.2f, 0.2f, 1.0f );       // Track color
-	style.Colors[ ImGuiCol_SliderGrab ] = ImVec4( 0.0f, 0.5f, 1.0f, 1.0f );    // Knob color
-
-	// Customize size and rounding if needed
-	float original_frame_padding = style.FramePadding.y;
-	float original_grab_min_size = style.GrabMinSize;
-	style.FramePadding.y = 2.0f;  // Smaller vertical padding
-	style.GrabMinSize = 10.0f;    // Minimum size of the grab
-
-	// Render the slider
-	bool value_changed = ImGui::SliderInt( label, v, v_min, v_max, format );
-
-	// Draw the value near the slider for better alignment
-	ImVec2 slider_pos = ImGui::GetItemRectMin();
-	ImVec2 slider_size = ImGui::GetItemRectSize();
-	ImGui::RenderText( ImVec2( slider_pos.x + slider_size.x + style.ItemInnerSpacing.x, slider_pos.y ), label );
-
-	// Restore style variables
-	style.Colors[ ImGuiCol_FrameBg ] = saved_colors[ 0 ];
-	style.Colors[ ImGuiCol_SliderGrab ] = saved_colors[ 1 ];
-	style.FramePadding.y = original_frame_padding;
-	style.GrabMinSize = original_grab_min_size;
-
-	return value_changed;
-}
 
 
 
@@ -1077,7 +1001,7 @@ void gui::Render() noexcept
 	}
 
 	if (BuildType::premium == true) {
-		if (CustomRectangleButton("Gun Profiles", ImVec2(100, 40))) {
+		if (CustomRectangleButton("Shared", ImVec2(100, 40))) {
 			Globals::ActiveTab = 7;
 		}
 		ImGui::Spacing();
