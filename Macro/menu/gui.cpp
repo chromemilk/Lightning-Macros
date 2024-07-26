@@ -426,7 +426,12 @@ bool CustomRectangleButton( const char *label, const ImVec2 &size ) {
 	 ImU32 outline_col;
 	if (Colors::customColors == true)
 	{
-		outline_col = IM_COL32((ImU32)Colors::accentColor[0], (ImU32)Colors::accentColor[1], (ImU32)Colors::accentColor[2], (ImU32)Colors::accentColor[3]);
+		outline_col = IM_COL32(
+			(int)(Colors::accentColor[ 0 ] * 255.0f),
+			(int)(Colors::accentColor[ 1 ] * 255.0f),
+			(int)(Colors::accentColor[ 2 ] * 255.0f),
+			(int)(Colors::accentColor[ 3 ] * 255.0f)
+		);
 	}
 	else { 
 		outline_col = IM_COL32( 0, 255, 0, 255 );
