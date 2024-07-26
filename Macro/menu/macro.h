@@ -736,6 +736,13 @@ namespace PhysicalAttributes {
 	inline float rounding_tab = 0.0f;
 }
 
+
+namespace Animations
+{
+	// This will be for things like the animations for the buttons
+	inline bool shouldAnimate = true;
+}
+
 namespace MenuConfig {
 	// Filters out non-txt files
 	inline bool isTxtFile(const std::string& fileName) {
@@ -828,6 +835,8 @@ namespace MenuConfig {
 					else if (key == "PhysicalAttributes::rounding_tab") PhysicalAttributes::rounding_tab = std::stof(value);
 					else if (key == "Colors::customColors") Colors::customColors = value == "1";
 					else if (key == "Colors::includeText") Colors::includeText = value == "1";
+					// *** Animations ***
+					else if (key == "Animations::shouldAnimate") Animations::shouldAnimate = value == "1";
 					else if (key == "Colors::accentColor") {
 						std::istringstream is_value(value);
 						std::string segment;
@@ -923,6 +932,8 @@ namespace MenuConfig {
 		configFile << "PhysicalAttributes::rounding_slider=" << PhysicalAttributes::rounding_slider << '\n';
 		configFile << "PhysicalAttributes::rounding_frame=" << PhysicalAttributes::rounding_frame << '\n';
 		configFile << "PhysicalAttributes::rounding_tab=" << PhysicalAttributes::rounding_tab << '\n';
+		// *** Animations ***
+		configFile << "Animations::shouldAnimate=" << Animations::shouldAnimate << '\n';
 		// *** Add the custom macros ***
 		for (size_t i = 0; i < CustomMacros::keyCommands.size(); ++i) {
 			configFile << "CustomMacros::keyCommands=" << CustomMacros::keyCommands[i] << '\n';
@@ -1136,8 +1147,3 @@ namespace AutomaticRecoil {
 
 }
 
-namespace Animations
-{
-	// This will be for things like the animations for the buttons
-	inline bool shouldAnimate = true;
-}
