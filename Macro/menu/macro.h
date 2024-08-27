@@ -484,183 +484,204 @@ namespace Profile {
 }
 // Gets the window handle of the game and checks the value of the pixel just below the center of the screen
 // Then it checks if the value has changed and if the hotkey is pressed
-namespace Triggerbot {
+namespace Triggerbot
+{
 	inline float aimbotColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	inline bool aimbot = false;
 	inline bool isActive = false;
 	inline bool trigger = false;
 	inline bool useAi = false;
-	inline std::vector<int> HotKeyList { 'X', 'Q', 'E', 'T' };
+	inline std::vector<int> HotKeyList{ 'X', 'Q', 'E', 'T' };
 	inline int HotKey = 0;
 	inline std::vector<double> currentRGBL = { 0, 0, 0 };
 	inline std::vector<double> lastRGBL = { 0, 0, 0 };
 	inline int accuracy = 0;
 	inline std::vector<std::pair<HWND, std::string>> windowList;
 	inline HWND targetWindowHandle = NULL;
-	inline COLORREF lastColor = RGB(0, 0, 0);
+	inline COLORREF lastColor = RGB( 0, 0, 0 );
 
-	inline void SetHotKey(int Index)
-	{
-		HotKey = HotKeyList.at(Index);
+	inline void SetHotKey( int Index ) {
+		HotKey = HotKeyList.at( Index );
 	}
 
-	inline std::string WideStringToString(const std::wstring& wstr) {
-		if (wstr.empty()) {
+	inline std::string WideStringToString( const std::wstring &wstr ) {
+		if (wstr.empty())
+		{
 			return std::string();
 		}
 
-		int sizeNeeded = WideCharToMultiByte(CP_UTF8, 0, &wstr[0], (int)wstr.size(), NULL, 0, NULL, NULL);
-		std::string strTo(sizeNeeded, 0);
-		WideCharToMultiByte(CP_UTF8, 0, &wstr[0], (int)wstr.size(), &strTo[0], sizeNeeded, NULL, NULL);
+		int sizeNeeded = WideCharToMultiByte( CP_UTF8, 0, &wstr[ 0 ], (int)wstr.size(), NULL, 0, NULL, NULL );
+		std::string strTo( sizeNeeded, 0 );
+		WideCharToMultiByte( CP_UTF8, 0, &wstr[ 0 ], (int)wstr.size(), &strTo[ 0 ], sizeNeeded, NULL, NULL );
 		return strTo;
 	}
-	inline BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam) {
+
+	inline BOOL CALLBACK EnumWindowsProc( HWND hwnd, LPARAM lParam ) {
 		const DWORD TITLE_SIZE = 1024;
-		WCHAR windowTitle[TITLE_SIZE];
+		WCHAR windowTitle[ TITLE_SIZE ];
 
-		GetWindowTextW(hwnd, windowTitle, TITLE_SIZE);
+		GetWindowTextW( hwnd, windowTitle, TITLE_SIZE );
 
-		int length = ::GetWindowTextLength(hwnd);
-		if (!IsWindowVisible(hwnd) || length == 0) {
+		int length = ::GetWindowTextLength( hwnd );
+		if (!IsWindowVisible( hwnd ) || length == 0)
+		{
 			return TRUE;
 		}
 
-		windowList.push_back({ hwnd, WideStringToString(std::wstring(windowTitle)) });
+		windowList.push_back( { hwnd, WideStringToString( std::wstring( windowTitle ) ) } );
 		return TRUE;
 	}
 
 	inline void UpdateWindowList() {
 		windowList.clear();
-		EnumWindows(EnumWindowsProc, reinterpret_cast<LPARAM>(&windowList));
+		EnumWindows( EnumWindowsProc, reinterpret_cast<LPARAM>(&windowList) );
 	}
+
 	inline COLORREF GetPixelColorFromCenter() {
-		if (targetWindowHandle == NULL) {
-			return RGB(0, 0, 0);
+		if (targetWindowHandle == NULL)
+		{
+			return RGB( 0, 0, 0 );
 		}
 
-		HDC hWindowDC = GetDC(NULL);  // Get DC for the entire screen
+		HDC hWindowDC = GetDC( NULL );
+		if (!hWindowDC) return RGB( 0, 0, 0 ); // Error checking for GetDC
 
 		RECT rect;
-		GetClientRect(targetWindowHandle, &rect);
-		ClientToScreen(targetWindowHandle, (POINT*)&rect.left);  // Convert to screen coordinates
-		ClientToScreen(targetWindowHandle, (POINT*)&rect.right); // Convert to screen coordinates
+		GetClientRect( targetWindowHandle, &rect );
+		ClientToScreen( targetWindowHandle, (POINT *)&rect.left );
+		ClientToScreen( targetWindowHandle, (POINT *)&rect.right );
 
 		int centerX = (rect.left + rect.right) / 2;
 		int centerY = (rect.top + rect.bottom) / 2;
 
-		COLORREF colorRef = GetPixel(hWindowDC, centerX - 1, centerY - 1);
+		COLORREF colorRef = GetPixel( hWindowDC, centerX - 1, centerY - 1 );
 
-		ReleaseDC(NULL, hWindowDC);
+		ReleaseDC( NULL, hWindowDC );
 		return colorRef;
 	}
 
+	inline bool IsHotkeyPressed() {
+		return (GetAsyncKeyState( Triggerbot::HotKey ) & 0x8000) != 0;
+	}
 
 	POINT FindTargetColor() {
-		HDC hWindowDC = GetDC(NULL);  // Get DC for the entire screen
+		if (targetWindowHandle == NULL || !IsHotkeyPressed())
+		{
+			return { 0, 0 };
+		}
+
+		HDC hWindowDC = GetDC( NULL );
+		if (!hWindowDC) return { 0, 0 }; // Error checking for GetDC
 
 		RECT rect;
+		GetClientRect( targetWindowHandle, &rect );
+		ClientToScreen( targetWindowHandle, (POINT *)&rect.left );
+		ClientToScreen( targetWindowHandle, (POINT *)&rect.right );
 
+		int screenX = GetSystemMetrics( SM_CXSCREEN );
+		int screenY = GetSystemMetrics( SM_CYSCREEN );
 
-		// Boundary check
-		int screenX = GetSystemMetrics(SM_CXSCREEN);
-		int screenY = GetSystemMetrics(SM_CYSCREEN);
-
-
-		GetClientRect(targetWindowHandle, &rect);
-		ClientToScreen(targetWindowHandle, (POINT*)&rect.left);  // Convert to screen coordinates
-		ClientToScreen(targetWindowHandle, (POINT*)&rect.right); // Convert to screen coordinates
-
-		// Scan every pixel and check if it matches the target color within the accuracy range, if it is true, return the coordinates
-		for (int x = rect.left; x < rect.right; x++) {
-			for (int y = rect.top; y < rect.bottom; y++) {
-				if (x < 0 || x >= screenX || y < 0 || y >= screenY) {
-					continue; // Skip out-of-bounds pixels
+		for (int x = rect.left; x < rect.right; x += 5)
+		{  // Step by 5 to reduce CPU usage
+			for (int y = rect.top; y < rect.bottom; y += 5)
+			{  // Step by 5 to reduce CPU usage
+				if (x < 0 || x >= screenX || y < 0 || y >= screenY)
+				{
+					continue;
 				}
 
-				COLORREF colorRef = GetPixel(hWindowDC, x, y);
-				int r = GetRValue(colorRef);
-				int g = GetGValue(colorRef);
-				int b = GetBValue(colorRef);
+				COLORREF colorRef = GetPixel( hWindowDC, x, y );
+				int r = GetRValue( colorRef );
+				int g = GetGValue( colorRef );
+				int b = GetBValue( colorRef );
 
-				if (abs(r - aimbotColor[0] * 255) <= accuracy &&
-					abs(g - aimbotColor[1] * 255) <= accuracy &&
-					abs(b - aimbotColor[2] * 255) <= accuracy) {
-					ReleaseDC(NULL, hWindowDC);
+				if (abs( r - aimbotColor[ 0 ] * 255 ) <= accuracy &&
+					abs( g - aimbotColor[ 1 ] * 255 ) <= accuracy &&
+					abs( b - aimbotColor[ 2 ] * 255 ) <= accuracy)
+				{
+					ReleaseDC( NULL, hWindowDC );
 					return { x, y };
 				}
 			}
 		}
 
-		ReleaseDC(NULL, hWindowDC);
+		ReleaseDC( NULL, hWindowDC );
 		return { 0, 0 };
 	}
 
-	inline bool IsHotkeyPressed() {
-		return (GetAsyncKeyState(Triggerbot::HotKey) & 0x8000) != 0;
-	}
+	
 
 	inline void CheckForRGBChangeAndClick() {
-		COLORREF currentRGB = GetPixelColorFromCenter();
-
-		// Update lastRGBL for comparison
-		lastRGBL[0] = GetRValue(lastColor);
-		lastRGBL[1] = GetGValue(lastColor);
-		lastRGBL[2] = GetBValue(lastColor);
-
-		currentRGBL[0] = GetRValue(currentRGB);
-		currentRGBL[1] = GetGValue(currentRGB);
-		currentRGBL[2] = GetBValue(currentRGB);
-
-		// Check if RGB value changed and hotkey pressed
-		if ((abs(currentRGBL[0] - lastRGBL[0]) > accuracy ||
-			abs(currentRGBL[1] - lastRGBL[1]) > accuracy ||
-			abs(currentRGBL[2] - lastRGBL[2]) > accuracy) && IsHotkeyPressed()) {
-			// Emulate left mouse click
-			mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
-			Sleep(10);
-			mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
-			//PullMouse::Run(No_recoil::smoothing, No_recoil::strengthX, No_recoil::strengthY);
-
+		if (targetWindowHandle == NULL || !IsHotkeyPressed())
+		{
 			return;
 		}
 
-		lastColor = currentRGB;  // Update last color after each check
+		COLORREF currentRGB = GetPixelColorFromCenter();
+
+		// Update lastRGBL for comparison
+		lastRGBL[ 0 ] = GetRValue( lastColor );
+		lastRGBL[ 1 ] = GetGValue( lastColor );
+		lastRGBL[ 2 ] = GetBValue( lastColor );
+
+		currentRGBL[ 0 ] = GetRValue( currentRGB );
+		currentRGBL[ 1 ] = GetGValue( currentRGB );
+		currentRGBL[ 2 ] = GetBValue( currentRGB );
+
+		// Check if RGB value changed and hotkey pressed
+		if ((abs( currentRGBL[ 0 ] - lastRGBL[ 0 ] ) > accuracy ||
+			abs( currentRGBL[ 1 ] - lastRGBL[ 1 ] ) > accuracy ||
+			abs( currentRGBL[ 2 ] - lastRGBL[ 2 ] ) > accuracy))
+		{
+			mouse_event( MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0 );
+			Sleep( 10 );
+			mouse_event( MOUSEEVENTF_LEFTUP, 0, 0, 0, 0 );
+			lastColor = currentRGB;  // Update last color after click
+		}
 	}
 
 	inline void aimbotRun() {
-		// Get the color of the target
-		COLORREF targetColor = RGB(aimbotColor[0] * 255, aimbotColor[1] * 255, aimbotColor[2] * 255);
-		// Scan
+		if (targetWindowHandle == NULL || !IsHotkeyPressed())
+		{
+			return;
+		}
+
 		POINT target = FindTargetColor();
-		// If the target is found, move the mouse to the target
-		if (target.x != 0 && target.y != 0) {
-			SetCursorPos(target.x, target.y);
+		if (target.x != 0 && target.y != 0)
+		{
+			POINT currentPos;
+			GetCursorPos( &currentPos );
+
+			int deltaX = target.x - currentPos.x;
+			int deltaY = target.y - currentPos.y;
+
+			mouse_event( MOUSEEVENTF_MOVE, deltaX, deltaY, 0, 0 );
 		}
 	}
-	
 
 	inline void Run() {
+		static DWORD lastWindowListUpdate = 0;
+		DWORD currentTime = GetTickCount64();
 
-		if (Triggerbot::isActive == true) {
-			static DWORD lastWindowListUpdate = 0;
-			DWORD currentTime = GetTickCount64();
-
-			// Update the window list every 10 seconds (10000 milliseconds) instead of every iteration
-			if (currentTime - lastWindowListUpdate > 10000) {
-				UpdateWindowList();
-				lastWindowListUpdate = currentTime;
-			}
-
+		if (isActive && (currentTime - lastWindowListUpdate > 10000))
+		{
+			UpdateWindowList();
+			lastWindowListUpdate = currentTime;
 		}
 
-		if (Triggerbot::trigger == true) {
-		CheckForRGBChangeAndClick();
+		if (trigger)
+		{
+			CheckForRGBChangeAndClick();
+
+			Sleep( 1 );  // Small delay to reduce CPU usage
 		}
-		else if (Triggerbot::aimbot == true) {
+		else if (aimbot)
+		{
 			aimbotRun();
+
+			Sleep( 1 );  // Small delay to reduce CPU usage
 		}
 
-		//Sleep(1);  // Reduce CPU usage
 	}
 }
 
