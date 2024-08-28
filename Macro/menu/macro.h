@@ -612,10 +612,6 @@ namespace Triggerbot
 	
 
 	inline void CheckForRGBChangeAndClick() {
-		if (targetWindowHandle == NULL || !IsHotkeyPressed())
-		{
-			return;
-		}
 
 		COLORREF currentRGB = GetPixelColorFromCenter();
 
@@ -633,15 +629,17 @@ namespace Triggerbot
 			abs( currentRGBL[ 1 ] - lastRGBL[ 1 ] ) > accuracy ||
 			abs( currentRGBL[ 2 ] - lastRGBL[ 2 ] ) > accuracy))
 		{
-			mouse_event( MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0 );
-			Sleep( 10 );
-			mouse_event( MOUSEEVENTF_LEFTUP, 0, 0, 0, 0 );
-			lastColor = currentRGB;  // Update last color after click
+			if (IsHotkeyPressed())
+			{
+				mouse_event( MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0 );
+				mouse_event( MOUSEEVENTF_LEFTUP, 0, 0, 0, 0 );
+			}
 		}
+		lastColor = currentRGB;  // Update last color after click
 	}
 
 	inline void aimbotRun() {
-		if (targetWindowHandle == NULL || !IsHotkeyPressed())
+		if (targetWindowHandle == NULL)
 		{
 			return;
 		}
@@ -672,16 +670,11 @@ namespace Triggerbot
 		if (trigger)
 		{
 			CheckForRGBChangeAndClick();
-
-			Sleep( 1 );  // Small delay to reduce CPU usage
 		}
-		else if (aimbot)
-		{
-			aimbotRun();
-
-			Sleep( 1 );  // Small delay to reduce CPU usage
-		}
-
+		//if (aimbot)
+		//{
+			//aimbotRun();
+		//}
 	}
 }
 
