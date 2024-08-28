@@ -1824,7 +1824,7 @@ void gui::Render() noexcept
 			}
 			if (Triggerbot::isActive == true) {
 				CustomCheckbox("Smart Pixel Detection", &Triggerbot::useAi);
-				ImGui::SliderInt("Accuracy", &Triggerbot::accuracy, 1, 25);
+				ImGui::SliderInt("Accuracy", &Triggerbot::accuracy, 1, 40);
 				if (ImGui::Combo("Hold Key", &Triggerbot::HotKey, "X\0Q\0E\0T\0")) {
 					Triggerbot::SetHotKey(Triggerbot::HotKey);
 				}
