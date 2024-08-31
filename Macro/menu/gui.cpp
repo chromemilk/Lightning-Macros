@@ -1816,13 +1816,14 @@ void gui::Render() noexcept
 		if (Globals::ActiveTab == 8) {
 			ImGui::SetCursorPos(ImVec2(gui::WIDTH / 2.8, 60));
 			ImGui::Text("           === PixelBot ===");
-			CustomCheckbox("Enable", &Triggerbot::isActive);
+			CustomCheckbox("Master Switch", &Triggerbot::isActive);
 			CustomCheckbox("Aimbot Enable", &Triggerbot::aimbot);
-			CustomCheckbox("Pixel Change Triggerbot", &Triggerbot::trigger);
-			if (Triggerbot::aimbot == true) {
+			if (Triggerbot::aimbot == true)
+			{
 				// Aimbot color selector 
-				ImGui::ColorEdit4("Aimbot Color", (float*)&Triggerbot::aimbotColor, ImGuiColorEditFlags_NoInputs);
+				ImGui::ColorEdit4( "Aimbot Color", (float *)&Triggerbot::aimbotColor, ImGuiColorEditFlags_NoInputs );
 			}
+			CustomCheckbox("Pixel Change Triggerbot", &Triggerbot::trigger);
 			if (Triggerbot::isActive == true) {
 				CustomCheckbox("Smart Pixel Detection", &Triggerbot::useAi);
 				ImGui::SliderInt("Accuracy", &Triggerbot::accuracy, 1, 40);

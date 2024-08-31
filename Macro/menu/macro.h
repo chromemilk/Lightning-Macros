@@ -1045,7 +1045,10 @@ namespace AntiVirus {
 			// If a debugger is detected, exit the program
 			return true;
 		}
-		return false;
+		else
+		{
+			return false;
+		}
 	}
 
 	inline void Run() {
