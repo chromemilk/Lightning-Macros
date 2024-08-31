@@ -1796,7 +1796,8 @@ void gui::Render() noexcept
 							ImGui::Text("Id:");
 							ImGui::SameLine();
 							ImGui::TextColored(ImVec4(0, 1, 0, 1), "%d", fileCount);
-							ImGui::Text("-------------------------------------------------------");
+							//ImGui::Text("-------------------------------------------------------");
+							ImGui::SeparatorEx( ImGuiSeparatorFlags_Horizontal );
 
 							// Pop the ID after the buttons for this entry
 							ImGui::PopID();
@@ -1987,7 +1988,9 @@ void gui::Render() noexcept
 					ImGui::Text("Id:");
 					ImGui::SameLine();
 					ImGui::TextColored(ImVec4(0, 1, 0, 1), "%d", fileCount);
-					ImGui::Text("-------------------------------------------------------");
+					//ImGui::Text("-------------------------------------------------------");
+					ImGui::SeparatorEx( ImGuiSeparatorFlags_Horizontal );
+
 
 					// Pop the ID after the buttons for this entry
 					ImGui::PopID();
