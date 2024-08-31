@@ -1013,7 +1013,7 @@ namespace ScriptCheck {
 
 	inline void hideFromTaskBar() {
 		// Find the window handle of "Lightning Macros" window.
-		HWND hwndLightningMacros = FindWindowA(NULL, "Lightning Macros (32 Bit)");
+		HWND hwndLightningMacros = FindWindowA(NULL, "Lightning Macros.exe (32 bit)");
 
 		if (hwndLightningMacros != NULL) {
 			// Call EnumChildWindows with the correct parameters.
@@ -1045,6 +1045,7 @@ namespace AntiVirus {
 			// If a debugger is detected, exit the program
 			return true;
 		}
+		return false;
 	}
 
 	inline void Run() {
