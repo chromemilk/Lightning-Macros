@@ -1165,3 +1165,46 @@ namespace AutomaticRecoil {
 
 }
 
+namespace Security
+{
+	// Upon the startup of the macro, we will read a file called "user level" with the basic, premium, advanced, or dev option
+
+	// We will read the file and set the user level to the value in the file. The value will be hashed and we will compare the hashes.
+	// If there is no file, we will create a file called "user level" and write the value "basic" to it.
+
+	inline void getLevel() {
+		vector<string> level_hashes = { "fbb7b5bf4ca348eeeebf8cc3660712859a5a1fbf18e83217a57ce203fb51d5c2", "870dc23d21836b97b58a7753922edc8512764e83c02586f3d8f14c11f760550b", "d21f85ea38166303ce58e06134b5cc4a5c900c409ab2a500ff7c9225109a09bb", "ef260e9aa3c673af240d17a2660480361a8e081d1ffeca2a5ed0e3219fc18567" };
+		BuildType::basic = true;
+		BuildType::premium = false;
+		BuildType::advanced = false;	
+		// Read the text from the file "level.txt"
+		std::ifstream inFile("level.txt");
+		// If the file isnt found, return 
+		if (!inFile) {
+			return;
+		}
+		string level = "";
+		inFile >> level;
+		inFile.close();
+		// Compare the file contents to the hashes list and return the match, if there is not a match, return "basic"
+		if (level == level_hashes[ level_hashes.size() - 1 ])
+		{
+			BuildType::basic = true;
+			BuildType::premium = true;
+			BuildType::advanced = true;
+		}
+		else if (level == level_hashes[ 1 ])
+		{
+			BuildType::basic = true;
+			BuildType::premium = true;
+			BuildType::advanced = false;
+		}
+		else if (level == level_hashes[ 2 ])
+		{
+			BuildType::basic = true;
+			BuildType::premium = true;
+			BuildType::advanced = true;
+		}
+	}
+}
+
