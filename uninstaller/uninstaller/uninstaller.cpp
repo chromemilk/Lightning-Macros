@@ -2,6 +2,9 @@
 #include <fstream>
 #include <cstdlib> // For system
 #include <cstdio>  // For remove
+#include <filesystem> // For deleting all .txt files (C++17)
+
+namespace fs = std::filesystem;
 
 int main() {
     std::cout << "Are you sure you want to uninstall? (y/n): ";
@@ -12,21 +15,32 @@ int main() {
     {
         // Terminate tasks with error checking
         if (system( "taskkill /f /im ExternalCrossHairOverlay.exe" ) != 0)
-            std::cerr << "Failed to terminate ExternalCrossHairOverlay.exe\n";
+            std::cerr << "Failed to terminate ExternalCrossHairOverlay.exe [Try running as admin]:\n";
         if (system( "taskkill /f /im \"Lightning Macros.exe\"" ) != 0)
-            std::cerr << "Failed to terminate Lightning Macros.exe\n";
+            std::cerr << "Failed to terminate Lightning Macros.exe [Try running as admin]:\n";
         if (system( "taskkill /f /im \"Lightning Launcher.exe\"" ) != 0)
-            std::cerr << "Failed to terminate Lightning Launcher.exe\n";
+            std::cerr << "Failed to terminate Lightning Launcher.exe [Try running as admin]:\n";
 
-        // Attempt to remove files with feedback
+        // Attempt to remove specific files with feedback
         if (remove( ".\\ExternalCrossHairOverlay.exe" ) != 0)
-            std::cerr << "Failed to remove ExternalCrossHairOverlay.exe\n";
+            std::cerr << "Failed to remove ExternalCrossHairOverlay.exe [Try running as admin]:\n";
         if (remove( ".\\Lightning Macros.exe" ) != 0)
-            std::cerr << "Failed to remove Lightning Macros.exe\n";
+            std::cerr << "Failed to remove Lightning Macros.exe [Try running as admin]:\n";
         if (remove( ".\\Lightning Launcher.exe" ) != 0)
-            std::cerr << "Failed to remove Lightning Launcher.exe\n";
-        else
-            std::cout << "Attempted to remove files\n";
+            std::cerr << "Failed to remove Lightning Launcher.exe [Try running as admin]:\n";
+
+        // Delete all .txt files in the current directory
+        std::cout << "Attempting to delete all .txt files in the current directory...\n";
+        for (const auto &entry : fs::directory_iterator( "." ))
+        {
+            if (entry.is_regular_file() && entry.path().extension() == ".txt")
+            {
+                if (fs::remove( entry.path() ))
+                    std::cout << "Deleted: " << entry.path().filename() << '\n';
+                else
+                    std::cerr << "Failed to delete [Try running as admin]: " << entry.path().filename() << '\n';
+            }
+        }
     }
     else
     {
