@@ -426,7 +426,7 @@ void gui::Render() noexcept
 	static const char* items[] = { "Valorant", "Apex Legends", "CS:GO", "Rainbow Six Siege", "Warzone", "Rust" };
 	static int item_current = 0;
 	
-	static bool awaitProgramStart = false;
+	static bool awaitProgramStart = true;
 
 	static bool triedToLoadCfg = false;
 
@@ -437,7 +437,7 @@ void gui::Render() noexcept
 		std::string program = settings.substr(0, settings.find(" "));
 		std::string awaitStart = settings.substr(settings.find(" ") + 1, settings.length());
 		// Convert the string to a bool
-		if (Globals::editing == false) {
+		//if (Globals::editing == false) {
 
 			bool awaitStartBool = awaitStart == "1" ? true : false;
 			if (awaitStartBool == true) {
@@ -461,7 +461,7 @@ void gui::Render() noexcept
 			}
 			else if (program == "Rust") {
 				item_current = 5;
-			}
+		//	}
 		}
 	}
 
@@ -608,18 +608,6 @@ void gui::Render() noexcept
 	if (ImGui::BeginTabItem("Auto Exec")) {
 		if (ImGui::Combo("##combo", &item_current, items, IM_ARRAYSIZE(items))) {
 
-		}
-		ImGui::Checkbox("Await Program Start", &awaitProgramStart);
-		ImGui::Checkbox("Edit Auto Start", &Globals::editing);
-		if (ImGui::IsItemHovered()) {
-			// Begin the tooltip block
-			ImGui::BeginTooltip();
-
-			// Add text to the tooltip
-			ImGui::Text("Click this to edit the auto execute");
-
-			// End the tooltip block
-			ImGui::EndTooltip();
 		}
 		if (ImGui::Button("Write To File")) {
 			writeCfg(items[item_current], awaitProgramStart);
