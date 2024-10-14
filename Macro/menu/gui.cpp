@@ -1162,7 +1162,7 @@ void gui::Render() noexcept
 				ImGui::Spacing();
 				ImGui::EndTabItem();
 			}
-			if (ImGui::BeginTabItem("Automatic")) {
+			if (ImGui::BeginTabItem("Automatic (Not working)")) {
 				// The automatic tab will automatically determine the best settings based on the guns movement
 				// So, it will find out if the gun is moving left, or right, and it will determine how fast it is moving up
 				// We will ask the user to help it train
