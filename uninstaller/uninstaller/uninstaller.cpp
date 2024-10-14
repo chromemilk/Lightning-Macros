@@ -30,7 +30,7 @@ int main() {
             std::cerr << "Failed to remove Lightning Launcher.exe [Try running as admin]:\n";
 
         // Delete all .txt files in the current directory
-        std::cout << "Attempting to delete all .txt files in the current directory...\n";
+        std::cout << "Attempting to delete all created config files in the current directory...\n";
         for (const auto &entry : fs::directory_iterator( "." ))
         {
             if (entry.is_regular_file() && entry.path().extension() == ".txt")
